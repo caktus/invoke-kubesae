@@ -5,7 +5,7 @@ setup(
     name='invoke-kubesae',
     version='0.0.1',
     packages=[
-        'invocations',
+        'kubesae',
     ],
     url='https://github.com/caktus/invoke-kubesae',
     author='Caktus Group',
