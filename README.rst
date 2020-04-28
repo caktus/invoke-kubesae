@@ -86,7 +86,7 @@ AWS
 configure-eks-kubeconfig
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Obtain an EKS access token.
+    Obtain an EKS access token.
 
 docker-login
 ~~~~~~~~~~~~
