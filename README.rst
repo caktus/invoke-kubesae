@@ -1,16 +1,11 @@
 invoke-kubsae
-===========
-
-This is a Python package providing a library that can be imported
-from `fabric3 <https://pypi.org/project/Fabric3/>`_ scripts to provide common implementations of
-typical tasks for projects that are using
-`tequila <https://github.com/caktus/tequila>`_ for provisioning and deploy.
+=============
 
 License
 -------
 
 This invoke library is released under the BSD License.  See the `LICENSE
-<https://github.com/caktus/tequila-django/blob/master/LICENSE>`_ file for
+<https://github.com/caktus/invoke-kubsae/blob/master/LICENSE>`_ file for
 more details.
 
 Releases
@@ -37,121 +32,80 @@ Installation
 
 pip install into your virtualenv::
 
-    $ pip install git+https://github.com/caktus/invoke-kubesae@0.0.1#egg=invoke-kubesae
+    $ pip install git+https://github.com/caktus/invoke-kubesae@X.Y.Z#egg=invoke-kubesae
 
 Usage
 -----
 
-The simplest case is to just import everything from invoke-kubsae at the top of your
+Invoke works from a ``tasks.py`` file usually found in the project root.
+
+The following code snippet imports all of the the current collections.
+
+
 ``tasks.py``::
 
-    # tasks.py
     import invoke
+    from colorama import init
     from kubesae import *
 
-Then write some tasks to select environments, e.g.::
+
+    init(autoreset=True)
+
 
     @invoke.task
-    def staging():
-        """
-        Usage: inv staging <tasks>
-        """
-        env.environment = 'staging'
+    def staging(c):
+        c.config.env = "staging"
 
-These just need to set ``env.environment`` to the name of one of your
-deploy environments.
+
+    ns = invoke.Collection()
+    ns.add_collection(image)
+    ns.add_collection(aws)
+    ns.add_collection(deploy)
+    ns.add_collection(pod)
+    ns.add_task(staging)
+    ns.configure({"run": {"echo": True}})
+
+
+Now you can run to see all of the currently available tasks::
+
+    $ inv -l
+
 
 
 Task reference
---------------
+==============
 
-(In alphabetical order.)
+(In alphabetical order, and by collection)
 
-bootstrap
-.........
+AWS
+---
 
-Does the simplest possible install of Python v2 so that Ansible can
-run from then on.
-Use when the target servers might not even have Python installed.::
+configure-eks-kubeconfig
+~~~~~~~~~~~~~~~~~~~~~~~~
+Obtain an EKS access token.
 
-    $ fab <ENVNAME> bootstrap
+docker-login
+~~~~~~~~~~~~
+Obtain ECR credentials to use with docker login.
 
-check_role_versions
-...................
-
-Check that the roles required in requirements.yml are all installed
-and at the right version, and fail if not.
-
-This gets run automatically before a deploy or bootstrap, so won't
-often need to be run by itself.::
-
-    $ fab check_role_versions
-
-create_superuser
-................
-
-Create a superuser with no password (there's no way to pass a
-new password to the createpassword command non-interactively).
-Use password reset after creating the user.::
-
-    $ fab <ENVNAME> create_superuser:<USERNAME>
-
-For example::
-
-    $ fab staging create_superuser:dpoirier@caktusgroup.com
+Deploy
+------
 
 deploy
-......
+~~~~~~
+- Default
 
-Run an ansible deploy for an environment.
+Deploy your k8s application.
 
-By default, runs the playbook *site* and deploys
-the default branch for the specified environment. You
-can override either of those by passing ``playbook`` or
-``branch`` options.  Do not include ``.yml`` in the playbook
-name.
+install
+~~~~~~~
 
-.. note::
+Install ansible-galaxy requirements.yml.
 
-   The *site* playbooks does the whole provisioning and deploy.
-   You can optionally speed up deploys that don't need to update
-   software and configuration of the base server by using the
-   *web* playbook, which just updates the web servers.
+Image
+-----
 
-You can also set/override any Ansible variable by passing
-the ``extra_vars`` option.  Here's the usage::
+build
+~~~~~
 
-    $ fab <ENV> deploy[:playbook=NNNN][:extra_vars=aaa=1,bbb=2][:branch=xxx]
-
-Some examples::
-
-    $ fab staging deploy
-    $ fab staging deploy:playbook=site
-    $ fab staging deploy:branch=PRJ-9999
-    $ fab staging deploy:playbook=site:extra_vars=gunicorn_num_workers=8
-
-install_roles
-.............
-
-Run Ansible galaxy's role installer for the requirements in
-``deployment/requirements.yml``.
-
-.. warning::
-
-    Ansible galaxy does *not* check version numbers.
-    It only installs roles that are not installed already.
-    So running ``install_roles`` is not enough to ensure your
-    roles are up to date.
-
-    You can run ``fab check_role_versions`` to see if
-    versions are up to date.
-
-    ``deploy`` and ``bootstrap`` also check and refuse to
-    run if versions are wrong.
-
-.. note::
-
-    Ansible galaxy always installs roles into the first directory
-    on your roles_path by default. Maybe install_roles ought to
-    override that on the command line and always install to
-    deployment/roles?
+Builds the docker image using docker-compose.
