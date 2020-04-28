@@ -2,12 +2,12 @@
 from setuptools import setup
 
 setup(
-    name='invoke-kubsae',
+    name='invoke-kubesae',
     version='0.0.1',
     packages=[
         'invocations',
     ],
-    url='https://github.com/caktus/invoke-kubsae',
+    url='https://github.com/caktus/invoke-kubesae',
     author='Caktus Group',
     author_email='',
     description='',

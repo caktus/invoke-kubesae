@@ -37,7 +37,7 @@ Installation
 
 pip install into your virtualenv::
 
-    $ pip install git+https://github.com/caktus/invoke-kubsae@X.Y.Z#egg=invoke-kubsae
+    $ pip install git+https://github.com/caktus/invoke-kubesae@0.0.1#egg=invoke-kubesae
 
 Usage
 -----
@@ -46,12 +46,10 @@ The simplest case is to just import everything from invoke-kubsae at the top of 
 ``tasks.py``::
 
     # tasks.py
-
-    from invocations import *
+    import invoke
+    from kubesae import *
 
 Then write some tasks to select environments, e.g.::
-
-    import invoke
 
     @invoke.task
     def staging():
