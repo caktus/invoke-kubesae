@@ -9,7 +9,10 @@ from colorama import Style
 
 @invoke.task()
 def aws_docker_login(c):
-    """Obtain ECR credentials to use with docker login."""
+    """Obtain ECR credentials to use with docker login.
+    
+    Usage: inv aws.docker_login
+    """
     registry = c.config.repository.split("/")[0]
     print(Style.DIM + f"Performing {registry} registry authentication")
     c.run(
@@ -19,7 +22,10 @@ def aws_docker_login(c):
 
 @invoke.task()
 def configure_eks_kubeconfig(c, cluster=None, region=None):
-    """Obtain EKS access token."""
+    """Obtain EKS access token.
+    
+    Usage: inv aws.configure_eks_kubconfig --cluster=<CLUSTER> --region=<REGION>
+    """
     if not cluster:
         cluster = c.config.cluster
     if not region:
