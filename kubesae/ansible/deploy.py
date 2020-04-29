@@ -19,7 +19,7 @@ def ansible_deploy(c, env=None, tag=None):
         env: The target ansible host ("staging", "production", etc ...)
         tag: The image tag in the registry to deploy
 
-    Usage: inv ansible.deploy --env=<ENVIRONMENT> --tag=<TAG>
+    Usage: inv deploy --env=<ENVIRONMENT> --tag=<TAG>
     """
     if env is None:
         env = c.config.env
