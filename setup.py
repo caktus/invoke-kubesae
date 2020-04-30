@@ -1,12 +1,11 @@
 # Always prefer setuptools over distutils
-from setuptools import setup
+from setuptools import setup, find_packages
+
 
 setup(
     name='invoke-kubesae',
     version='0.0.3',
-    packages=[
-        'kubesae',
-    ],
+    packages=find_packages(),
     url='https://github.com/caktus/invoke-kubesae',
     author='Caktus Group',
     author_email='',
