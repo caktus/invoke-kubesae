@@ -14,14 +14,19 @@ def install_requirements(c, requirements_file=None):
 
 
 @invoke.task(pre=[install_requirements], default=True)
-def ansible_deploy(c, env=None, tag=None):
+def ansible_deploy(c, env=None, tag=None, play=None):
     """Deploy K8s application."""
     if env is None:
         env = c.config.env
     if tag is None:
         tag = c.config.tag
+    if play is None:
+        if "play" in c.config:
+            play = c.config.play
+        else:
+            play = "deploy.yaml"
     with c.cd("deploy/"):
-        c.run(f"ansible-playbook deploy.yml -l {env} -e k8s_container_image_tag={tag} -vv")
+        c.run(f"ansible-playbook {play} -l {env} -e k8s_container_image_tag={tag} -vv")
 
 
 deploy = invoke.Collection("deploy")
