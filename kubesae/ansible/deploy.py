@@ -3,9 +3,12 @@ import invoke
 
 @invoke.task
 def install_requirements(c, requirements_file=None):
-    if requirements_file is None:
-        requirements_file = c.config.requirements_file or "requirements.yaml"
     """Install ansible-galaxy requirements.yml"""
+    if requirements_file is None:
+        if "requirements_file" in c.config:
+            requirements_file = c.config.requirements_file
+        else:
+            requirements_file = "requirements.yaml"
     with c.cd("deploy/"):
         c.run(f"ansible-galaxy install -f -r {requirements_file} -p roles/")
 
