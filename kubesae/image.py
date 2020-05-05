@@ -20,12 +20,14 @@ def generate_tag(c):
 
 
 @invoke.task(pre=[generate_tag])
-def build_image(c, tag=None):
+def build_image(c, tag=None, service=None):
     """Build Docker image using docker-compose."""
     if tag is None:
         tag = c.config.tag
+    if service is None:
+        service = c.config.service or 'app'
     # build app container
-    c.run("docker-compose build app", echo=True)
+    c.run(f"docker-compose build {service}", echo=True)
     print(Style.DIM + f"Tagging {tag}")
     c.run(f"docker tag {c.config.app}:latest {c.config.app}:{tag}", echo=True)
     c.config.tag = tag
