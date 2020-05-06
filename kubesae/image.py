@@ -26,7 +26,7 @@ def build_image(c, tag=None, service=None):
         tag = c.config.tag
     if service is None:
         if "service" in c.config:
-            service = c.config.play
+            service = c.config.service
         else:
             service = "app"
     # build service container
