@@ -25,8 +25,11 @@ def build_image(c, tag=None, service=None):
     if tag is None:
         tag = c.config.tag
     if service is None:
-        service = c.config.service or 'app'
-    # build app container
+        if "service" in c.config:
+            service = c.config.play
+        else:
+            service = "app"
+    # build service container
     c.run(f"docker-compose build {service}", echo=True)
     print(Style.DIM + f"Tagging {tag}")
     c.run(f"docker tag {c.config.app}:latest {c.config.app}:{tag}", echo=True)
