@@ -24,7 +24,7 @@ Contributing
 ------------
 
 If you think you've found a bug or are interested in contributing to
-this project, check out `invoke-kubsae on Github
+this project, check out `invoke-kubesae on Github
 <https://github.com/caktus/invoke-kubesae>`_.
 
 Development sponsored by `Caktus Consulting Group, LLC
@@ -42,7 +42,9 @@ Usage
 
 Invoke works from a ``tasks.py`` file usually found in the project root.
 
-The following code snippet imports all of the the current collections.
+The following code snippet imports all of the the current collections,
+then sets some configuration values for various tasks. See below for
+more documentation on the configuration each task uses.
 
 
 ``tasks.py``::
@@ -66,14 +68,47 @@ The following code snippet imports all of the the current collections.
     ns.add_collection(deploy)
     ns.add_collection(pod)
     ns.add_task(staging)
-    ns.configure({"run": {"echo": True}})
+    ns.configure(
+        {
+            "app": "appname",
+            "aws": {
+                "region": "us-west-2",
+            },
+            "repository": "354308461188.dkr.ecr.us-west-2.amazonaws.com/pressweb",
+            "run": {
+                "echo": True
+            },
+        }
+    )
 
 
 Now you can see all of the currently available tasks by running::
 
     $ inv -l
 
+Build an image::
 
+    $ inv image.build
+
+Log in to the AWS docker registry::
+
+    $ inv aws.docker-login
+
+Push the image just built::
+
+    $ inv image.push
+
+Set up your kubectl context::
+
+    $ inv aws.configure-eks-kubeconfig
+
+Install Ansible roles::
+
+    $ inv deploy.install
+
+Deploy the same tag we just pushed::
+
+    $ inv image.tag staging deploy.deploy
 
 Task reference
 ==============
@@ -88,10 +123,22 @@ configure-eks-kubeconfig
 
     Obtain an EKS access token.
 
+    Config:
+
+        aws.region: Name of AWS region (default: us-east-1)
+
+        cluster: Name of EKS cluster
+
 docker-login
 ~~~~~~~~~~~~
 
     Obtain ECR credentials to use with docker login.
+
+    Config:
+
+        aws.region: Name of AWS region (default: us-east-1)
+
+        repository: Name of docker repository, e.g. dockerhub.com/pressweb.
 
 Deploy
 ------
@@ -100,6 +147,14 @@ deploy
 ~~~~~~
 
     Deploy your k8s application. (Default)
+
+    Prereq: deploy.install
+
+    Config:
+
+        env: Name of environment to deploy to
+
+        tag: Image tag to deploy (default: same as default tag for build & push)
 
 install
 ~~~~~~~
@@ -112,7 +167,14 @@ Image
 build
 ~~~~~
 
-    Builds the docker image using docker-compose.
+    Build Docker image.  Tags with <tag> parameter and "latest".
+
+    Config:
+
+    Config:
+
+        tag: tag to apply. (Will be generated from git branch/commit
+        if not set).
 
 push
 ~~~~
@@ -121,20 +183,28 @@ push
     
     This command does the ``build`` and ``tag`` tasks before pushing.
 
+    Config:
+
+        repository: Name of docker repository, e.g. dockerhub.com/pressweb.
+
+        tag: tag to push. (Will be generated from git branch/commit
+        if not set).
+
 stop
 ~~~~
 
-    Stops the deployable image
+    Stops the deployable image in docker-compose
 
 tag
 ~~~
 
-    Generate tag based on local branch & commit hash
+    Generate tag based on local branch & commit hash.
+    Set the config "tag" to the resulting tag.
 
 up 
 ~~~
 
-    Brings up the deployable image locally for testing
+    Brings up the deployable image locally in docker-compose for testing
 
 Pod
 ---

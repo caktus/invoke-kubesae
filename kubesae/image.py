@@ -9,7 +9,10 @@ from colorama import Style
 
 @invoke.task()
 def generate_tag(c):
-    """Generate tag based on local branch & commit hash."""
+    """
+    Generate tag based on local branch & commit hash.
+    Set the config "tag" to the resulting tag.
+    """
     if not hasattr(c.config, "tag"):
         # gather build context
         branch = c.run("git rev-parse --abbrev-ref HEAD", hide="out").stdout.strip()
@@ -21,7 +24,15 @@ def generate_tag(c):
 
 @invoke.task(pre=[generate_tag])
 def build_image(c, tag=None):
-    """Build Docker image using docker-compose."""
+    """
+    Build Docker image using docker-compose.  Tags with <tag> parameter
+    and "latest".
+
+    Config:
+
+        tag: tag to apply. (Will be generated from git branch/commit
+        if not set).
+    """
     if tag is None:
         tag = c.config.tag
     # build app container
@@ -33,7 +44,16 @@ def build_image(c, tag=None):
 
 @invoke.task(pre=[build_image], default=True)
 def push_image(c, tag=None):
-    """Push Docker image to remote repository."""
+    """
+    Push Docker image to remote repository.
+
+    Config:
+
+        repository: where to push. e.g. github.com/pressweb
+
+        tag: tag to push. (Will be generated from git branch/commit
+        if not set).
+    """
     if tag is None:
         tag = c.config.tag
     print(Style.DIM + f"Pushing {tag} to {c.config.repository}")
