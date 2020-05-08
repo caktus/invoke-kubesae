@@ -1,6 +1,6 @@
 import invoke
 from colorama import init
-from invocations import *
+from kubesae import *
 
 
 init(autoreset=True)

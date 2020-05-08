@@ -1,0 +1,4 @@
+app: test_app
+repository: TEST_REPO
+run:
+  pty: True

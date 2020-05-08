@@ -112,7 +112,7 @@ Image
 build
 ~~~~~
 
-    Builds the docker image using docker-compose.
+    Builds and tags from a Dockerfile.
 
 push
 ~~~~
