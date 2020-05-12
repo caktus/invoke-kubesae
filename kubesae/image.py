@@ -24,7 +24,7 @@ def generate_tag(c):
 
 @invoke.task(pre=[generate_tag])
 def build_image(c, tag=None, dockerfile=None):
-    """Build Docker image using docker-compose.
+    """Build Docker image using docker build.
 
     Params:
         tag: A user supplied tag for the image
