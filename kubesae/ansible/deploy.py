@@ -5,7 +5,10 @@ import invoke
 
 @invoke.task
 def install_requirements(c):
-    """Install ansible-galaxy requirements.yml"""
+    """Install ansible-galaxy requirements.yml
+
+    Usage: inv ansible.install
+    """
     req_file = "requirements.yml" if os.path.exists("deploy/requirements.yml") else "requirements.yaml"
     with c.cd("deploy/"):
         c.run(f"ansible-galaxy install -f -r '{req_file}' -p roles/")
@@ -13,14 +16,13 @@ def install_requirements(c):
 
 @invoke.task(pre=[install_requirements], default=True)
 def ansible_deploy(c, env=None, tag=None):
-    """
-    Deploy K8s application.
+    """Deploy K8s application.
 
-    Config:
+    Params:
+        env: The target ansible host ("staging", "production", etc ...)
+        tag: The image tag in the registry to deploy
 
-        env: Name of environment to deploy to
-        tag: Image tag to deploy (default: same as default tag for build & push)
-
+    Usage: inv deploy --env=<ENVIRONMENT> --tag=<TAG>
     """
     if env is None:
         env = c.config.env

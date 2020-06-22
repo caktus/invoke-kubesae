@@ -12,6 +12,8 @@ def aws_docker_login(c):
     """
     Obtain ECR credentials to use with docker login.
 
+    Usage: inv aws.docker_login
+
     Config:
 
         aws.region: Name of AWS region (default: us-east-1)
@@ -29,6 +31,8 @@ def aws_docker_login(c):
 def configure_eks_kubeconfig(c, cluster=None, region=None):
     """
     Obtain EKS access token.
+
+    Usage: inv aws.configure_eks_kubconfig --cluster=<CLUSTER> --region=<REGION>
 
     Config:
 

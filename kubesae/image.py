@@ -12,6 +12,8 @@ def generate_tag(c):
     """
     Generate tag based on local branch & commit hash.
     Set the config "tag" to the resulting tag.
+
+    Usage: inv image.tag
     """
     if not hasattr(c.config, "tag"):
         # gather build context
@@ -28,10 +30,10 @@ def build_image(c, tag=None):
     Build Docker image using docker-compose.  Tags with <tag> parameter
     and "latest".
 
-    Config:
+    Params:
+        tag: A user supplied tag for the image
 
-        tag: tag to apply. (Will be generated from git branch/commit
-        if not set).
+    Usage: inv image.build --tag=<TAG>
     """
     if tag is None:
         tag = c.config.tag
@@ -44,15 +46,16 @@ def build_image(c, tag=None):
 
 @invoke.task(pre=[build_image], default=True)
 def push_image(c, tag=None):
-    """
-    Push Docker image to remote repository.
+    """Push Docker image to remote repository.
 
-    Config:
+    push_image is the default task and will, without the tag parameter, generate a
+    tag using the git hash and branch name. Then, build and push that image
+    to the repository defined for this task.
 
-        repository: where to push. e.g. github.com/pressweb
+    Params:
+        tag: A user supplied tag for the generated image.
 
-        tag: tag to push. (Will be generated from git branch/commit
-        if not set).
+    Usage: inv push --tag=<TAG>
     """
     if tag is None:
         tag = c.config.tag
@@ -64,7 +67,10 @@ def push_image(c, tag=None):
 
 @invoke.task()
 def up(c):
-    """Brings up deployable image"""
+    """Brings up deployable image
+
+    Usage: inv image.up
+    """
     c.run("docker-compose down")
     c.run("docker-compose run --rm app python manage.py migrate")
     c.run("docker-compose up -d --remove-orphans")
@@ -72,7 +78,10 @@ def up(c):
 
 @invoke.task()
 def stop(c):
-    """Stops deployable image"""
+    """Stops deployable image
+
+    Usage: inv image.stop
+    """
     c.run("docker-compose stop", warn=True)
 
 
