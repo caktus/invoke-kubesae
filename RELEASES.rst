@@ -1,6 +1,11 @@
 Releases
 ========
 
+v0.0.5, 2020-06-22
+~~~~~~~~~~~~~~~~~~
+
+* Build images with docker, rather than docker-compose
+
 v0.0.4, 2020-06-22
 ~~~~~~~~~~~~~~~~~~
 
