@@ -25,22 +25,24 @@ def generate_tag(c):
 
 
 @invoke.task(pre=[generate_tag])
-def build_image(c, tag=None):
+def build_image(c, tag=None, dockerfile=None):
     """
-    Build Docker image using docker-compose.  Tags with <tag> parameter
+    Build Docker image using docker build. Tags with <tag> parameter
     and "latest".
 
     Params:
         tag: A user supplied tag for the image
+        dockerfile: A non-standard Dockerfile location and/or name
 
-    Usage: inv image.build --tag=<TAG>
+    Usage: inv image.build --tag=<TAG> --dockerfile=<PATH_TO_DOCKERFILE>
     """
     if tag is None:
         tag = c.config.tag
-    # build app container
-    c.run("docker-compose build app", echo=True)
+    if dockerfile is None:
+        dockerfile = "Dockerfile"
+    # build app image
     print(Style.DIM + f"Tagging {tag}")
-    c.run(f"docker tag {c.config.app}:latest {c.config.app}:{tag}", echo=True)
+    c.run(f"docker build -t {c.config.app}:latest -t {c.config.app}:{tag} -f {dockerfile} .", echo=True)
     c.config.tag = tag
 
 

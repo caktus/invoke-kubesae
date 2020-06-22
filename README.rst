@@ -180,7 +180,7 @@ push
 ~~~~
 
     Push docker image to remote repository. (Default)
-    
+
     This command does the ``build`` and ``tag`` tasks before pushing.
 
     Config:
@@ -201,7 +201,7 @@ tag
     Generate tag based on local branch & commit hash.
     Set the config "tag" to the resulting tag.
 
-up 
+up
 ~~~
 
     Brings up the deployable image locally in docker-compose for testing
@@ -228,7 +228,3 @@ shell
 ~~~~~
 
     Gives you a shell on the application pod. (Default)
-
-
-
-

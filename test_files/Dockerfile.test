@@ -1,0 +1,2 @@
+from busybox:latest as busybox-test
+CMD ["echo", "Dockerfile.test"]
