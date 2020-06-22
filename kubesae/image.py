@@ -9,8 +9,10 @@ from colorama import Style
 
 @invoke.task()
 def generate_tag(c):
-    """Generate tag based on local branch & commit hash.
-    
+    """
+    Generate tag based on local branch & commit hash.
+    Set the config "tag" to the resulting tag.
+
     Usage: inv image.tag
     """
     if not hasattr(c.config, "tag"):
@@ -24,11 +26,13 @@ def generate_tag(c):
 
 @invoke.task(pre=[generate_tag])
 def build_image(c, tag=None):
-    """Build Docker image using docker-compose.
+    """
+    Build Docker image using docker-compose.  Tags with <tag> parameter
+    and "latest".
 
     Params:
         tag: A user supplied tag for the image
-    
+
     Usage: inv image.build --tag=<TAG>
     """
     if tag is None:
@@ -44,13 +48,13 @@ def build_image(c, tag=None):
 def push_image(c, tag=None):
     """Push Docker image to remote repository.
 
-    push_image is the default task and will, without the tag parameter, generate a 
+    push_image is the default task and will, without the tag parameter, generate a
     tag using the git hash and branch name. Then, build and push that image
     to the repository defined for this task.
 
     Params:
         tag: A user supplied tag for the generated image.
-    
+
     Usage: inv push --tag=<TAG>
     """
     if tag is None:
@@ -64,7 +68,7 @@ def push_image(c, tag=None):
 @invoke.task()
 def up(c):
     """Brings up deployable image
-    
+
     Usage: inv image.up
     """
     c.run("docker-compose down")
@@ -75,7 +79,7 @@ def up(c):
 @invoke.task()
 def stop(c):
     """Stops deployable image
-    
+
     Usage: inv image.stop
     """
     c.run("docker-compose stop", warn=True)
