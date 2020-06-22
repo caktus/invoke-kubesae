@@ -1,6 +1,6 @@
 import invoke
 from colorama import init
-from kubesae import *
+from kubesae import image, aws, deploy, pod
 
 
 init(autoreset=True)
@@ -17,4 +17,17 @@ ns.add_collection(aws)
 ns.add_collection(deploy)
 ns.add_collection(pod)
 ns.add_task(staging)
-ns.configure({"run": {"echo": True}})
+
+ns.configure(
+    {
+        "app": "pressweb",
+        "aws": {
+            "region": "us-west-2",
+        },
+        "cluster": "Pressweb-EKS-cluster",
+        "repository": "354308461188.dkr.ecr.us-west-2.amazonaws.com/pressweb",
+        "run": {
+            "echo": True,
+        }
+    }
+)
