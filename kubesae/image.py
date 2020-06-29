@@ -16,6 +16,9 @@ def generate_tag(c):
     Usage: inv image.tag
     """
     if not hasattr(c.config, "tag"):
+        dirty = c.run("git status --short").stdout.strip()
+        if dirty:
+            print(Fore.RED + "The working tree is dirty. Commit or stash your changes if you care about a stable tag name.")
         # gather build context
         branch = c.run("git rev-parse --abbrev-ref HEAD", hide="out").stdout.strip()
         branch = branch.replace("/", "-")  # clean branch name
