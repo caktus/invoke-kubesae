@@ -76,7 +76,8 @@ more documentation on the configuration each task uses.
             },
             "repository": "354308461188.dkr.ecr.us-west-2.amazonaws.com/pressweb",
             "run": {
-                "echo": True
+                "echo": True,
+                "pty": True,
             },
         }
     )
