@@ -20,7 +20,10 @@ def generate_tag(c):
         branch = c.run("git rev-parse --abbrev-ref HEAD", hide="out").stdout.strip()
         branch = branch.replace("/", "-")  # clean branch name
         commit = c.run("git rev-parse --short HEAD", hide="out").stdout.strip()
-        c.config.tag = f"{branch}-{commit}"
+        dirty = c.run("git status --short").stdout.strip()
+        if dirty:
+            dirty = "-dirty"
+        c.config.tag = f"{branch}-{commit}{dirty}"
         print(Style.DIM + f"Set config.tag to {c.config.tag}")
 
 
