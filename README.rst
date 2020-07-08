@@ -224,6 +224,21 @@ debian
 
     An ephemeral container with which to run sysadmin tasks on the cluster
 
+get_db_name
+~~~~~~~~~~~
+
+    Get the database name (including the username, password, and port)
+
+get_db_dump
+~~~~~~~~~~~
+
+    Get a dump of an environment's database
+
+load_db_dump
+~~~~~~~~~~~~
+
+    Load a database dump file into an environment's database
+
 shell
 ~~~~~
 
