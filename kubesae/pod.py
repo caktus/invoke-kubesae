@@ -32,39 +32,42 @@ def debian(c):
 def clean_migrations(c):
     """Removes all migration jobs
 
-    Usage: inv pod.clean-migrations
+    Usage: inv <DEPLOYMENT> pod.clean-migrations
     """
     c.run(
         f"kubectl delete pods -n {c.config.namespace} -ljob-name=migrate"
     )
 
-# TODO: Implement database related tasks
-@invoke.task
-def get_current_database(c):
-    pass
-
-
 @invoke.task()
 def get_db_name(c, hide=False):
+    """Get the name of the pod's database"""
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
         f"deploy/{c.config.container_name} -- printenv DATABASE_URL"
     )
     return c.run(command, hide=hide)
 
+@invoke.task(help={"fetch-var": "The environment variable that contains a media bucket location. usage: --fetch-var='MEDIA_BUCKET'"})
+def get_media_name(c, fetch_var, hide=False):
+    """Get the pod's S3 media bucket name"""
+    command = (
+        f"kubectl --namespace {c.config.namespace} exec -i "
+        f"deploy/{c.config.container_name} -- printenv {fetch_var}"
+    )
+    return c.run(command, hide=hide)
 
 @invoke.task()
-def get_db_dump(c, filename="database.dump"):
+def get_db_dump(c, filename=None):
     """Get a database dump (into the filename)."""
     database_url = get_db_name(c, hide=True).stdout.strip()
+    if not filename:
+        filename = f"{c.config.namespace}_database.dump"
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
         f"deploy/{c.config.container_name} -- pg_dump -Fc --no-owner --clean "
         f"--dbname {database_url} > {filename}"
     )
     c.run(command)
-
-
 
 @invoke.task()
 def load_db_dump(c, filename):
@@ -86,3 +89,4 @@ pod.add_task(clean_migrations, "clean_migrations")
 pod.add_task(get_db_name, "get_db_name")
 pod.add_task(get_db_dump, "get_db_dump")
 pod.add_task(load_db_dump, "load_db_dump")
+pod.add_task(get_media_name, "get_media_location")

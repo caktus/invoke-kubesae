@@ -229,6 +229,11 @@ get_db_name
 
     Get the database name (including the username, password, and port)
 
+get_media_name
+~~~~~~~~~~~~~~
+    
+    Get the pod's S3 media bucket name
+
 get_db_dump
 ~~~~~~~~~~~
 
