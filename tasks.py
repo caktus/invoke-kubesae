@@ -28,6 +28,7 @@ ns.configure(
         "repository": "354308461188.dkr.ecr.us-west-2.amazonaws.com/pressweb",
         "run": {
             "echo": True,
+            "pty": True,
         }
     }
 )

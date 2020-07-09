@@ -29,8 +29,18 @@ def debian(c):
 
 
 @invoke.task
+def clean_collectstatic(c):
+    """Removes all collectstatic pods
+
+    Usage: inv pod.clean-collectstatic
+    """
+    c.run(
+        f"kubectl delete pods -n {c.config.namespace} -ljob-name=collectstatic"
+    )
+
+@invoke.task
 def clean_migrations(c):
-    """Removes all migration jobs
+    """Removes all migration pods
 
     Usage: inv pod.clean-migrations
     """
@@ -48,4 +58,5 @@ pod = invoke.Collection("pod")
 pod.add_task(shell, "shell")
 pod.add_task(clean_debian, "clean_debian")
 pod.add_task(debian, "debian")
+pod.add_task(clean_collectstatic, "clean_collectstatic")
 pod.add_task(clean_migrations, "clean_migrations")
