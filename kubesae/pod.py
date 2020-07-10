@@ -67,7 +67,6 @@ def get_db_dump(c, filename=None):
     c.run(command)
 
 
-
 @invoke.task()
 def load_db_dump(c, filename):
     """Load a database dump from a file."""

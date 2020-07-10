@@ -60,8 +60,8 @@ more documentation on the configuration each task uses.
     @invoke.task
     def staging(c):
         c.config.env = "staging"
-        c.config.namespace = "pressweb-staging"
-        c.config.container_name = "pressweb-web"
+        c.config.namespace = "myproject-staging"
+        c.config.container_name = "myproject-web"
 
 
     ns = invoke.Collection()
@@ -76,7 +76,7 @@ more documentation on the configuration each task uses.
             "aws": {
                 "region": "us-west-2",
             },
-            "repository": "354308461188.dkr.ecr.us-west-2.amazonaws.com/pressweb",
+            "repository": "123456789012.dkr.ecr.us-east-1.amazonaws.com/myproject",
             "run": {
                 "echo": True
             },
@@ -140,7 +140,7 @@ docker-login
 
         aws.region: Name of AWS region (default: us-east-1)
 
-        repository: Name of docker repository, e.g. dockerhub.com/pressweb.
+        repository: Name of docker repository, e.g. dockerhub.com/myproject.
 
 Deploy
 ------
@@ -187,7 +187,7 @@ push
 
     Config:
 
-        repository: Name of docker repository, e.g. dockerhub.com/pressweb.
+        repository: Name of docker repository, e.g. dockerhub.com/myproject.
 
         tag: tag to push. (Will be generated from git branch/commit
         if not set).
