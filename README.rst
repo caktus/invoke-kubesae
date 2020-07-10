@@ -60,6 +60,8 @@ more documentation on the configuration each task uses.
     @invoke.task
     def staging(c):
         c.config.env = "staging"
+        c.config.namespace = "myproject-staging"
+        c.config.container_name = "myproject-web"
 
 
     ns = invoke.Collection()
@@ -74,7 +76,7 @@ more documentation on the configuration each task uses.
             "aws": {
                 "region": "us-west-2",
             },
-            "repository": "354308461188.dkr.ecr.us-west-2.amazonaws.com/pressweb",
+            "repository": "123456789012.dkr.ecr.us-east-1.amazonaws.com/myproject",
             "run": {
                 "echo": True,
                 "pty": True,
@@ -139,7 +141,7 @@ docker-login
 
         aws.region: Name of AWS region (default: us-east-1)
 
-        repository: Name of docker repository, e.g. dockerhub.com/pressweb.
+        repository: Name of docker repository, e.g. dockerhub.com/myproject.
 
 Deploy
 ------
@@ -186,7 +188,7 @@ push
 
     Config:
 
-        repository: Name of docker repository, e.g. dockerhub.com/pressweb.
+        repository: Name of docker repository, e.g. dockerhub.com/myproject.
 
         tag: tag to push. (Will be generated from git branch/commit
         if not set).
@@ -224,6 +226,21 @@ debian
 ~~~~~~
 
     An ephemeral container with which to run sysadmin tasks on the cluster
+
+get_db_name
+~~~~~~~~~~~
+
+    Get the database name (including the username, password, and port)
+
+get_db_dump
+~~~~~~~~~~~
+
+    Get a dump of an environment's database
+
+load_db_dump
+~~~~~~~~~~~~
+
+    Load a database dump file into an environment's database
 
 shell
 ~~~~~

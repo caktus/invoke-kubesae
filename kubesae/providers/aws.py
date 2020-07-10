@@ -17,7 +17,7 @@ def aws_docker_login(c):
     Config:
 
         aws.region: Name of AWS region (default: us-east-1)
-        repository: Name of docker repository, e.g. dockerhub.com/pressweb.
+        repository: Name of docker repository, e.g. dockerhub.com/myproject.
     """
     registry = c.config.repository.split("/")[0]
     region = c.config.aws.get("region", "us-east-1")
