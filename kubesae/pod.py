@@ -54,8 +54,10 @@ def get_db_name(c, hide=False):
 
 
 @invoke.task()
-def get_db_dump(c, filename="database.dump"):
+def get_db_dump(c, filename=None):
     """Get a database dump (into the filename)."""
+    if not filename:
+        filename = f"{c.config.namespace}_database.dump"
     database_url = get_db_name(c, hide=True).stdout.strip()
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
