@@ -60,6 +60,8 @@ more documentation on the configuration each task uses.
     @invoke.task
     def staging(c):
         c.config.env = "staging"
+        c.config.namespace = "pressweb-staging"
+        c.config.container_name = "pressweb-web"
 
 
     ns = invoke.Collection()
