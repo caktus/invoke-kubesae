@@ -29,8 +29,18 @@ def debian(c):
 
 
 @invoke.task
+def clean_collectstatic(c):
+    """Removes all collectstatic pods
+
+    Usage: inv pod.clean-collectstatic
+    """
+    c.run(
+        f"kubectl delete pods -n {c.config.namespace} -ljob-name=collectstatic"
+    )
+
+@invoke.task
 def clean_migrations(c):
-    """Removes all migration jobs
+    """Removes all migration pods
 
     Usage: inv <DEPLOYMENT> pod.clean-migrations
     """
@@ -59,6 +69,8 @@ def get_media_name(c, fetch_var, hide=False):
 @invoke.task()
 def get_db_dump(c, filename=None):
     """Get a database dump (into the filename)."""
+    if not filename:
+        filename = f"{c.config.namespace}_database.dump"
     database_url = get_db_name(c, hide=True).stdout.strip()
     if not filename:
         filename = f"{c.config.namespace}_database.dump"
@@ -85,6 +97,7 @@ pod = invoke.Collection("pod")
 pod.add_task(shell, "shell")
 pod.add_task(clean_debian, "clean_debian")
 pod.add_task(debian, "debian")
+pod.add_task(clean_collectstatic, "clean_collectstatic")
 pod.add_task(clean_migrations, "clean_migrations")
 pod.add_task(get_db_name, "get_db_name")
 pod.add_task(get_db_dump, "get_db_dump")
