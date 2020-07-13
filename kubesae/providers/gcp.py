@@ -26,7 +26,7 @@ def gcp_docker_login(c):
 
 
 @invoke.task()
-def configure_kubeconfig(c, cluster=None, region=None):
+def configure_gcp_kubeconfig(c, cluster=None, region=None):
     """
     Authenticate into GCP to get credentials for the cluster.
 
@@ -49,4 +49,4 @@ def configure_kubeconfig(c, cluster=None, region=None):
 
 gcp = invoke.Collection("gcp")
 gcp.add_task(gcp_docker_login, "docker-login")
-gcp.add_task(configure_kubeconfig, "configure-kubeconfig")
+gcp.add_task(configure_gcp_kubeconfig, "configure-gcp-kubeconfig")
