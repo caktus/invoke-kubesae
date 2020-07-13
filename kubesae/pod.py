@@ -29,36 +29,57 @@ def debian(c):
 
 
 @invoke.task
-def clean_migrations(c):
-    """Removes all migration jobs
+def clean_collectstatic(c):
+    """Removes all collectstatic pods
 
-    Usage: inv pod.clean-migrations
+    Usage: inv pod.clean-collectstatic
+    """
+    c.run(
+        f"kubectl delete pods -n {c.config.namespace} -ljob-name=collectstatic"
+    )
+
+@invoke.task
+def clean_migrations(c):
+    """Removes all migration pods
+
+    Usage: inv <ENVIRONMENT> pod.clean-migrations
     """
     c.run(
         f"kubectl delete pods -n {c.config.namespace} -ljob-name=migrate"
     )
 
-# TODO: Implement database related tasks
 @invoke.task
-def get_current_database(c):
-    pass
+def fetch_namespace_var(c, fetch_var, hide=False):
+    """Takes a variable name that may be present on a running container. Queries the 
+    container for the value of that variable and returns it as a Result object.
 
-
-@invoke.task()
-def get_db_name(c, hide=False):
+    Args:
+        fetch_var (str): An environment variable expected on the target container
+        hide (bool, optional): Hides the stdout if True. Defaults to False.
+    Returns:
+        [Result]: Invoke Result object.
+    Usage:
+        inv <ENVIRONMENT> pod.fetch-namespace-var --fetch-var="<VARIABLE_NAME>"
+    """
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
-        f"deploy/{c.config.container_name} -- printenv DATABASE_URL"
+        f"deploy/{c.config.container_name} -- printenv {fetch_var}"
     )
     return c.run(command, hide=hide)
 
-
 @invoke.task()
-def get_db_dump(c, filename=None):
-    """Get a database dump (into the filename)."""
+def get_db_dump(c, db_var, filename=None):
+    """Get a database dump (into the filename).
+
+    Args:
+        db_var (str): The variable name that the database connection is stored in.
+        filename (string, optional): A filename to store the dump. Defaults to None.
+    Usage:
+        inv <ENVIRONMENT> pod.get-db-dump --db-var="<DB_VAR_NAME>"
+    """
+    database_url = fetch_namespace_var(c, fetch_var=db_var, hide=True).stdout.strip()
     if not filename:
         filename = f"{c.config.namespace}_database.dump"
-    database_url = get_db_name(c, hide=True).stdout.strip()
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
         f"deploy/{c.config.container_name} -- pg_dump -Fc --no-owner --clean "
@@ -66,11 +87,17 @@ def get_db_dump(c, filename=None):
     )
     c.run(command)
 
-
 @invoke.task()
-def load_db_dump(c, filename):
-    """Load a database dump from a file."""
-    database_url = get_db_name(c, hide=True).stdout.strip()
+def restore_db_from_dump(c, db_var, filename):
+    """Load a database dump from a file.
+
+    Args:
+        db_var (str): The variable the database connection is stored in.
+        filename (string): An filename of the dump to restore.
+    Usage:
+        inv <ENVIRONMENT> pod.restore-db-from-dump --db-var="<DB_VAR_NAME>" --filename="<PATH/TO/DBFILE>"
+    """
+    database_url = fetch_namespace_var(c, fetch_var=db_var, hide=True).stdout.strip()
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
         f"deploy/{c.config.container_name} -- "
@@ -83,7 +110,8 @@ pod = invoke.Collection("pod")
 pod.add_task(shell, "shell")
 pod.add_task(clean_debian, "clean_debian")
 pod.add_task(debian, "debian")
+pod.add_task(clean_collectstatic, "clean_collectstatic")
 pod.add_task(clean_migrations, "clean_migrations")
-pod.add_task(get_db_name, "get_db_name")
 pod.add_task(get_db_dump, "get_db_dump")
-pod.add_task(load_db_dump, "load_db_dump")
+pod.add_task(restore_db_from_dump, "restore_db_from_dump")
+pod.add_task(fetch_namespace_var, "fetch_namespace_var")

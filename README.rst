@@ -78,7 +78,8 @@ more documentation on the configuration each task uses.
             },
             "repository": "123456789012.dkr.ecr.us-east-1.amazonaws.com/myproject",
             "run": {
-                "echo": True
+                "echo": True,
+                "pty": True,
             },
         }
     )
@@ -226,17 +227,18 @@ debian
 
     An ephemeral container with which to run sysadmin tasks on the cluster
 
-get_db_name
-~~~~~~~~~~~
+fetch_namespace_var
+~~~~~~~~~~~~~~~~~~~
 
-    Get the database name (including the username, password, and port)
+    Takes a variable name that may be present on a running container. Queries the 
+    container for the value of that variable and returns it as a Result object.
 
 get_db_dump
 ~~~~~~~~~~~
 
     Get a dump of an environment's database
 
-load_db_dump
+restore_db_from_dump
 ~~~~~~~~~~~~
 
     Load a database dump file into an environment's database

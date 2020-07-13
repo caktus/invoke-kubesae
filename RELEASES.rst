@@ -5,6 +5,7 @@ vNext
 -----
 
 * Delete old migrations pods with single command
+* Add command to delete collectstatic pods
 
 v0.0.5, 2020-06-22
 ~~~~~~~~~~~~~~~~~~
