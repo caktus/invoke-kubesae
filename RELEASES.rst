@@ -1,11 +1,15 @@
 Releases
 ========
 
-vNext
------
+v0.0.6, 2020-07-13
+~~~~~~~~~~~~~~~~~~
 
 * Delete old migrations pods with single command
 * Add command to delete collectstatic pods
+* Add command to fetch an environment variable from container
+* Add command to get a database dump
+* Add command to restore a database dump
+* Updates docstrings
 
 v0.0.5, 2020-06-22
 ~~~~~~~~~~~~~~~~~~
