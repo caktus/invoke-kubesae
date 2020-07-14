@@ -209,6 +209,23 @@ up
 
     Brings up the deployable image locally in docker-compose for testing
 
+write_docker_env_file
+~~~~~~~~~~~~~~~~~~~~~
+
+    Looks for a config variable named "docker_env_file_template_path", and if such
+    a config variable exists, then it tries to run the commands in the file. The
+    results of the commands are written into a file named ``docker_env_file``. The
+    docker env template file should have 1 variable per line, each set to
+    the command that would get that variable's value.
+    For example::
+     MOST_RECENT_GIT_REVISION=git rev-parse --short HEAD
+     GIT_BRANCH=git rev-parse --abbrev-ref HEAD
+
+    Running ``write_docker_env_file()`` on such a template will create a
+    ``docker_env_file`` that will look like::
+     MOST_RECENT_GIT_REVISION=jksd76hj
+     GIT_BRANCH=my-current-git-branch
+
 Pod
 ---
 
@@ -230,7 +247,7 @@ debian
 fetch_namespace_var
 ~~~~~~~~~~~~~~~~~~~
 
-    Takes a variable name that may be present on a running container. Queries the 
+    Takes a variable name that may be present on a running container. Queries the
     container for the value of that variable and returns it as a Result object.
 
 get_db_dump
