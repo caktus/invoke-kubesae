@@ -95,6 +95,10 @@ def build_image(c, tag=None, dockerfile=None):
 
     Usage: inv image.build --tag=<TAG> --dockerfile=<PATH_TO_DOCKERFILE>
     """
+    # If docker_env_file_template is set in the config, then run write_docker_env_file().
+    if c.config.get("docker_env_file_template_path"):
+        write_docker_env_file(c)
+
     if tag is None:
         tag = c.config.tag
     if dockerfile is None:
