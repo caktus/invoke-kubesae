@@ -164,6 +164,31 @@ install
 
     Install ansible-galaxy requirements.yml.
 
+GCP
+---
+
+configure-gcp-kubeconfig
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Authenticate into GCP to get credentials for the cluster.
+
+    Config:
+        app: Name of the project in GCP
+
+        gcp.region: Name of GCP region (default: us-east1)
+
+        cluster: Name of cluster in GCP (default config.cluster)
+
+docker-login
+~~~~~~~~~~~~
+
+    Authenticate into GCP, and configure Docker.
+
+    Config:
+        app: Name of the project in GCP
+
+        repository: Name of docker repository, e.g. us.gcr.io/myproject/myproject
+
 Image
 -----
 
@@ -230,7 +255,7 @@ debian
 fetch_namespace_var
 ~~~~~~~~~~~~~~~~~~~
 
-    Takes a variable name that may be present on a running container. Queries the 
+    Takes a variable name that may be present on a running container. Queries the
     container for the value of that variable and returns it as a Result object.
 
 get_db_dump
