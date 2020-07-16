@@ -230,7 +230,7 @@ debian
 fetch_namespace_var
 ~~~~~~~~~~~~~~~~~~~
 
-    Takes a variable name that may be present on a running container. Queries the 
+    Takes a variable name that may be present on a running container. Queries the
     container for the value of that variable and returns it as a Result object.
 
 get_db_dump
@@ -247,3 +247,7 @@ shell
 ~~~~~
 
     Gives you a shell on the application pod. (Default)
+
+    Config:
+
+        container_name: Name of the Docker container.
