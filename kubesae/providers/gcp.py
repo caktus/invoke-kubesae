@@ -30,7 +30,7 @@ def configure_gcp_kubeconfig(c, cluster=None, region=None):
     """
     Authenticate into GCP to get credentials for the cluster.
 
-    Usage: inv gcp.configure-kubeconfig --cluster=<CLUSTER> --region=<REGION>
+    Usage: inv gcp.configure-gcp-kubeconfig --cluster=<CLUSTER> --region=<REGION>
 
     Config:
 
