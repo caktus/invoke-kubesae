@@ -42,9 +42,11 @@ Usage
 
 Invoke works from a ``tasks.py`` file usually found in the project root.
 
-The following code snippet imports all of the the current collections,
-then sets some configuration values for various tasks. See below for
-more documentation on the configuration each task uses.
+The following code snippet imports all of the the current collections to show an
+example for supporting AWS, then sets some configuration values for various tasks.
+Note that GCP is also supported in the ``providers.gcp`` module, and works similarly
+to the ``providers.aws`` module. See below for more documentation on the
+configuration each task uses.
 
 
 ``tasks.py``::
