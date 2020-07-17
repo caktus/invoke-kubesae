@@ -175,6 +175,7 @@ configure-gcp-kubeconfig
     Authenticate into GCP to get credentials for the cluster.
 
     Config:
+
         app: Name of the project in GCP
 
         gcp.region: Name of GCP region (default: us-east1)
@@ -187,6 +188,7 @@ docker-login
     Authenticate into GCP, and configure Docker.
 
     Config:
+
         app: Name of the project in GCP
 
         repository: Name of docker repository, e.g. us.gcr.io/myproject/myproject
