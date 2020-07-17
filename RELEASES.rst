@@ -3,7 +3,8 @@ Releases
 
 vNext
 -----
-* shell command uses (and requires) container_name config variable
+* Add support for Google Cloud Platform
+* Shell command uses (and requires) container_name config variable
 
 v0.0.6, 2020-07-13
 ~~~~~~~~~~~~~~~~~~
