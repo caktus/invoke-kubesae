@@ -42,9 +42,11 @@ Usage
 
 Invoke works from a ``tasks.py`` file usually found in the project root.
 
-The following code snippet imports all of the the current collections,
-then sets some configuration values for various tasks. See below for
-more documentation on the configuration each task uses.
+The following code snippet imports all of the the current collections to show an
+example for supporting AWS, then sets some configuration values for various tasks.
+Note that GCP is also supported in the ``providers.gcp`` module, and works similarly
+to the ``providers.aws`` module. See below for more documentation on the
+configuration each task uses.
 
 
 ``tasks.py``::
@@ -164,6 +166,33 @@ install
 
     Install ansible-galaxy requirements.yml.
 
+GCP
+---
+
+configure-gcp-kubeconfig
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Authenticate into GCP to get credentials for the cluster.
+
+    Config:
+
+        app: Name of the project in GCP
+
+        gcp.region: Name of GCP region (default: us-east1)
+
+        cluster: Name of cluster in GCP (default config.cluster)
+
+docker-login
+~~~~~~~~~~~~
+
+    Authenticate into GCP, and configure Docker.
+
+    Config:
+
+        app: Name of the project in GCP
+
+        repository: Name of docker repository, e.g. us.gcr.io/myproject/myproject
+
 Image
 -----
 
@@ -230,7 +259,7 @@ debian
 fetch_namespace_var
 ~~~~~~~~~~~~~~~~~~~
 
-    Takes a variable name that may be present on a running container. Queries the 
+    Takes a variable name that may be present on a running container. Queries the
     container for the value of that variable and returns it as a Result object.
 
 get_db_dump
