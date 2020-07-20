@@ -1,8 +1,8 @@
 Releases
 ========
 
-vNext
------
+v0.0.7, 2020-07-20
+~~~~~~~~~~~~~~~~~~
 * Add support for Google Cloud Platform
 
 v0.0.6, 2020-07-13
