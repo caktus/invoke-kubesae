@@ -276,3 +276,7 @@ shell
 ~~~~~
 
     Gives you a shell on the application pod. (Default)
+
+    Config:
+
+        container_name: Name of the Docker container.

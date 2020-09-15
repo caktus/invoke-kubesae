@@ -4,6 +4,7 @@ Releases
 v0.0.7, 2020-07-20
 ~~~~~~~~~~~~~~~~~~
 * Add support for Google Cloud Platform
+* Shell command uses (and requires) container_name config variable
 
 v0.0.6, 2020-07-13
 ~~~~~~~~~~~~~~~~~~

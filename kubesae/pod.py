@@ -5,9 +5,9 @@ import invoke
 def shell(c):
     """Gives you a shell on the application pod.
 
-    Usage: inv <ENVIRONMENT> pod
+    Usage: inv <ENVIRONMENT> pod.shell
     """
-    c.run(f"kubectl exec -it deploy/app -n {c.config.namespace} bash")
+    c.run(f"kubectl exec -it deploy/{c.config.container_name} -n {c.config.namespace} bash")
 
 
 @invoke.task()
@@ -50,7 +50,7 @@ def clean_migrations(c):
 
 @invoke.task
 def fetch_namespace_var(c, fetch_var, hide=False):
-    """Takes a variable name that may be present on a running container. Queries the 
+    """Takes a variable name that may be present on a running container. Queries the
     container for the value of that variable and returns it as a Result object.
 
     Args:
