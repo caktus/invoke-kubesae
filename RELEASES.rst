@@ -1,6 +1,10 @@
 Releases
 ========
 
+vNext, 2020-MM-DD
+~~~~~~~~~~~~~~~~~
+* Add command to run an alternate playbook
+
 v0.0.8, 2020-09-15
 ~~~~~~~~~~~~~~~~~~
 * Update shell command to use `container_name` (rather than "app")

@@ -7,7 +7,7 @@ import invoke
 def install_requirements(c):
     """Install ansible-galaxy requirements.yml
 
-    Usage: inv ansible.install
+    Usage: inv deploy.install
     """
     req_file = "requirements.yml" if os.path.exists("deploy/requirements.yml") else "requirements.yaml"
     with c.cd("deploy/"):
@@ -22,7 +22,7 @@ def ansible_deploy(c, env=None, tag=None):
         env: The target ansible host ("staging", "production", etc ...)
         tag: The image tag in the registry to deploy
 
-    Usage: inv deploy --env=<ENVIRONMENT> --tag=<TAG>
+    Usage: inv deploy.deploy --env=<ENVIRONMENT> --tag=<TAG>
     """
     if env is None:
         env = c.config.env
@@ -33,6 +33,24 @@ def ansible_deploy(c, env=None, tag=None):
         c.run(f"ansible-playbook {playbook} -l {env} -e k8s_container_image_tag={tag} -vv")
 
 
+@invoke.task
+def ansible_playbook(c, name, extra="", verbosity=1):
+    """Run a specified Ansible playbook.
+
+    Used to run a different playbook than the default playbook.
+
+    Params:
+        name: The name of the Ansible playbook to run, including the extension
+        extra: Additional command line arguments to ansible-playbook
+        verbosity: integer level of verbosity from 1 to 4 (most verbose)
+
+    Usage: inv deploy.playbook <PLAYBOOK>.yaml --extra=<EXTRA> --verbosity=<VERBOSITY>
+    """
+    with c.cd("deploy/"):
+        c.run(f"ansible-playbook {name} {extra} -{'v'*verbosity}")
+
+
 deploy = invoke.Collection("deploy")
 deploy.add_task(install_requirements, "install")
 deploy.add_task(ansible_deploy, "deploy")
+deploy.add_task(ansible_playbook, "playbook")

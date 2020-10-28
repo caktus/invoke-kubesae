@@ -166,6 +166,12 @@ install
 
     Install ansible-galaxy requirements.yml.
 
+playbook
+~~~~~~~~
+
+    Run a specified Ansible playbook, located in the ``deploy/`` directory.
+
+
 GCP
 ---
 
