@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='invoke-kubesae',
-    version='0.0.8',
+    version='0.0.9',
     packages=find_packages(),
     url='https://github.com/caktus/invoke-kubesae',
     author='Caktus Group',
