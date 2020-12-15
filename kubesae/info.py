@@ -10,7 +10,7 @@ def get_ansible_vars(c, var=None):
         var: A variable available to a host when called.
 
     Usage: inv <ENVIRONMENT> info
-           inv <ENVIRONEMNT> info --var=<ANSIBLE_VAR>
+           inv <ENVIRONMENT> info --var=<ANSIBLE_VAR>
     """
     if not var:
         var = "k8s_environment_variables"
