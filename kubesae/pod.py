@@ -117,8 +117,8 @@ def sync_media_tree(
     """Sync an S3 media tree for a given environment to another. 
 
     Args:
-        target_env   (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev").
-        media_bucket (string, required): The variable name for media defined in settings and host_vars.
+        target_env   (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev"). DEFAULT: staging
+        media_bucket (string, required): The variable name for media defined in settings and host_vars. DEFAULT: MEDIA_STORAGE_BUCKET_NAME
         acl          (string, required): Sets the access policy on each object. DEFAULT: public-read
                                          Possible values: [
                                             private, public-read, public-read-write, authenticated-read, 
