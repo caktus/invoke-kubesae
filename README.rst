@@ -286,3 +286,7 @@ shell
     Config:
 
         container_name: Name of the Docker container.
+
+sync-media
+~~~~~~~~~~
+    Syncs the S3 media buckets between two namespaces (e.g. production to staging)
