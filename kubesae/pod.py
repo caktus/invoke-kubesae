@@ -105,6 +105,61 @@ def restore_db_from_dump(c, db_var, filename):
     )
     c.run(command)
 
+@invoke.task
+def sync_media_tree(
+    c,
+    target_env="staging",
+    media_bucket="MEDIA_STORAGE_BUCKET_NAME",
+    acl="public-read",
+    dry_run=False,
+    delete=False,
+):
+    """Sync an S3 media tree for a given environment to another. 
+
+    Args:
+        target_env   (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev").
+        media_bucket (string, required): The variable name for media defined in settings and host_vars.
+        acl          (string, required): Sets the access policy on each object. DEFAULT: public-read
+                                         Possible values: [
+                                            private, public-read, public-read-write, authenticated-read, 
+                                            aws-exec-read, bucket-owner-read,bucket-owner-full-control,
+                                            log-delivery-write
+                                        ]
+        dry_run      (boolean, optional): Outputs the result to stdout without applying the action
+        delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
+
+    Usage:
+        inv production sync-media --dry-run: 
+            Will simulate a sync from production to staging using the s3 bucket defined in MEDIA_STORAGE_BUCKET with no acl applied.
+        
+        inv production sync-media --dry-run --delete
+            Will display the files that will be deleted from the staging s3 bucket defined in MEDIA_STORAGE_BUCKET.
+        
+        inv production sync-media --media-bucket="MEDIA" --acl public-read --delete
+            Will sync files from the s3 bucket defined in the environment variable "MEDIA" to a staging bucket with the acl of each object set to 'public-read', and
+            will delete objects on the staging bucket that do not exist on the production bucket.
+    """
+
+    cc = invoke.context.Context()
+    cc.config.env = target_env
+    cc.config.namespace = f"{c.config.app}-{target_env}"
+    cc.config.container_name = c.config.container_name
+
+    source_media_name = fetch_namespace_var(
+        c, fetch_var=f"{media_bucket}"
+    ).stdout.strip()
+    target_media_name = fetch_namespace_var(
+        cc, fetch_var=f"{media_bucket}"
+    ).stdout.strip()
+
+    dr = ""
+    dl = ""
+    if dry_run:
+        dr = "--dryrun"
+    if delete:
+        dl = "--delete"
+    c.run(f"aws s3 sync --acl {acl} s3://{source_media_name} s3://{target_media_name} {dr} {dl}")
+
 
 pod = invoke.Collection("pod")
 pod.add_task(shell, "shell")
@@ -115,3 +170,4 @@ pod.add_task(clean_migrations, "clean_migrations")
 pod.add_task(get_db_dump, "get_db_dump")
 pod.add_task(restore_db_from_dump, "restore_db_from_dump")
 pod.add_task(fetch_namespace_var, "fetch_namespace_var")
+pod.add_task(sync_media_tree, "sync_media")
