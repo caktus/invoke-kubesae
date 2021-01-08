@@ -1,6 +1,6 @@
 import invoke
 from colorama import init
-from kubesae import image, aws, deploy, pod
+from kubesae import image, aws, deploy, pod, info
 
 
 init(autoreset=True)
@@ -18,6 +18,7 @@ ns.add_collection(image)
 ns.add_collection(aws)
 ns.add_collection(deploy)
 ns.add_collection(pod)
+ns.add_collection(info)
 ns.add_task(staging)
 
 ns.configure(
