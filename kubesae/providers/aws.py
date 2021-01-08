@@ -52,10 +52,9 @@ def sync_media_tree(
     target_env="staging",
     media_bucket="MEDIA_STORAGE_BUCKET_NAME",
     acl="public-read",
-    local_target="./media",
+    local_target=None,
     dry_run=False,
     delete=False,
-    local=False,
 ):
     """Sync an S3 media tree for a given environment/namespace to another. 
 
@@ -68,7 +67,7 @@ def sync_media_tree(
                                             aws-exec-read, bucket-owner-read,bucket-owner-full-control,
                                             log-delivery-write
                                         ]
-        local_target (string, optional): Sets a default target for local syncs
+        local_target (string, optional): Sets a target directory for local syncs
         dry_run      (boolean, optional): Outputs the result to stdout without applying the action
         delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
         local        (boolean, optional): If set, syncs media files to the location defined by the "local_target" parameter.
@@ -106,9 +105,11 @@ def sync_media_tree(
         dr = "--dryrun"
     if delete:
         dl = "--delete"
-    if local:
-        c.run(f"aws s3 sync --acl {acl} s3://{source_media_name} {local_target} {dr} {dl}")
-    c.run(f"aws s3 sync --acl {acl} s3://{source_media_name} s3://{target_media_name} {dr} {dl}")
+
+    target_media_name = f"s3://{target_media_name}"
+    if local_target:
+        target_media_name = local_target
+    c.run(f"aws s3 sync --acl {acl} s3://{source_media_name} {target_media_name} {dr} {dl}")
 
 
 aws = invoke.Collection("aws")

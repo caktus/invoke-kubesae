@@ -66,6 +66,18 @@ def sync_media_tree(
         delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
 
     Usage:
+        inv production gcp.sync-media --dry-run: 
+            Will simulate a sync from production to staging using the bucket defined in MEDIA_STORAGE_BUCKET.
+        
+        inv production gcp.sync-media --dry-run --delete
+            Will display the files that will be deleted from the staging bucket defined in MEDIA_STORAGE_BUCKET.
+        
+        inv production gcp.sync-media --media-bucket="MEDIA" --delete
+            Will sync files from the bucket defined in the environment variable "MEDIA" to a staging bucket and
+            will delete objects on the staging bucket that do not exist on the production bucket.
+        
+        inv production gcp.sync-media --local-target="./media"
+            Will sync files from the production s3 bucket to "<PROJECT_ROOT>/media"
 
     """
 
