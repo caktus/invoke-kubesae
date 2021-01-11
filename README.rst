@@ -289,4 +289,4 @@ shell
 
 sync-media
 ~~~~~~~~~~
-    Syncs the S3 media buckets between two namespaces (e.g. production to staging)
+    Syncs a media bucket between two namespaces (e.g. `production` to `staging`, or `staging` to `local`).

@@ -77,7 +77,7 @@ def sync_media_tree(
             will delete objects on the staging bucket that do not exist on the production bucket.
         
         inv production gcp.sync-media --local-target="./media"
-            Will sync files from the production s3 bucket to "<PROJECT_ROOT>/media"
+            Will sync files from the production bucket to "<PROJECT_ROOT>/media"
 
     """
 
