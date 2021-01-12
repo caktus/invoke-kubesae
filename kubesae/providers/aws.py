@@ -49,17 +49,18 @@ def configure_eks_kubeconfig(c, cluster=None, region=None):
 @invoke.task(name="sync_media")
 def sync_media_tree(
     c,
-    target_env="staging",
+    sync_to="staging",
     media_bucket="MEDIA_STORAGE_BUCKET_NAME",
     acl="public-read",
-    local_target=None,
+    local_target="./media",
     dry_run=False,
     delete=False,
 ):
     """Sync an S3 media tree for a given environment/namespace to another. 
 
     Args:
-        target_env   (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev"). DEFAULT: staging
+        sync_to      (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev"), or "local". 
+            If set to "local" the tree will sync to a local folder. DEFAULT: staging.
         media_bucket (string, required): The variable name for media defined in settings and host_vars. DEFAULT: MEDIA_STORAGE_BUCKET_NAME
         acl          (string, required): Sets the access policy on each object. DEFAULT: public-read
                                          Possible values: [
@@ -67,7 +68,7 @@ def sync_media_tree(
                                             aws-exec-read, bucket-owner-read,bucket-owner-full-control,
                                             log-delivery-write
                                         ]
-        local_target (string, optional): Sets a target directory for local syncs
+        local_target (string, optional): Sets a target directory for local syncs. Defaults to "./media"
         dry_run      (boolean, optional): Outputs the result to stdout without applying the action
         delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
         local        (boolean, optional): If set, syncs media files to the location defined by the "local_target" parameter.
@@ -83,32 +84,40 @@ def sync_media_tree(
             Will sync files from the s3 bucket defined in the environment variable "MEDIA" to a staging bucket with the acl of each object set to 'public-read', and
             will delete objects on the staging bucket that do not exist on the production bucket.
         
-        inv production aws.sync-media --local --delete
-            Will sync files from the production s3 bucket to "<PROJECT_ROOT>/media"
+        inv production aws.sync-media --sync-to="local" --local-target="./public/media"
+            Will sync files from the production bucket to "<PROJECT_ROOT>/public/media"
     """
-
-    cc = invoke.context.Context()
-    cc.config.env = target_env
-    cc.config.namespace = f"{c.config.app}-{target_env}"
-    cc.config.container_name = c.config.container_name
-
+    sync_from = c.config.env
+    target_media_name = ""
+    dr = ""
+    dl = ""
+    
     source_media_name = fetch_namespace_var(
         c, fetch_var=f"{media_bucket}"
     ).stdout.strip()
-    target_media_name = fetch_namespace_var(
-        cc, fetch_var=f"{media_bucket}"
-    ).stdout.strip()
 
-    dr = ""
-    dl = ""
+    if sync_from == sync_to:
+        print("Source and Target environments are the same. Nothing to be done.")
+        return
+
+    if sync_to == "local":
+        target_media_name = local_target
+    else:
+        cc = invoke.context.Context()
+        cc.config.env = sync_to
+        cc.config.namespace = f"{c.config.app}-{sync_to}"
+        cc.config.container_name = c.config.container_name
+
+        target_media_name = fetch_namespace_var(
+            cc, fetch_var=f"{media_bucket}"
+        ).stdout.strip()
+        target_media_name = f"s3://{target_media_name}"
+
     if dry_run:
         dr = "--dryrun"
     if delete:
         dl = "--delete"
 
-    target_media_name = f"s3://{target_media_name}"
-    if local_target:
-        target_media_name = local_target
     c.run(f"aws s3 sync --acl {acl} s3://{source_media_name} {target_media_name} {dr} {dl}")
 
 
