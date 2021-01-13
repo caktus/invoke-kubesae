@@ -286,3 +286,7 @@ shell
     Config:
 
         container_name: Name of the Docker container.
+
+sync-media
+~~~~~~~~~~
+    Syncs a media bucket between two namespaces (e.g. `production` to `staging`, or `staging` to `local`).
