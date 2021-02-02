@@ -153,6 +153,9 @@ deploy
 
     Deploy your k8s application. (Default)
 
+    WARNING: if you are running this in CI, make sure to set `--verbosity=0` to prevent
+    environment variables from being logged in plain text in the CI console.
+
     Prereq: deploy.install
 
     Config:
@@ -160,6 +163,8 @@ deploy
         env: Name of environment to deploy to
 
         tag: Image tag to deploy (default: same as default tag for build & push)
+
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
 install
 ~~~~~~~
@@ -171,6 +176,16 @@ playbook
 
     Run a specified Ansible playbook, located in the ``deploy/`` directory.
 
+    WARNING: if you are running this in CI, make sure to set `--verbosity=0` to prevent
+    environment variables from being logged in plain text in the CI console.
+
+    Config:
+
+        name: The name of the Ansible playbook to run, including the extension
+
+        extra: Additional command line arguments to ansible-playbook
+
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
 GCP
 ---
