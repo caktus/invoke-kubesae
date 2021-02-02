@@ -26,16 +26,24 @@ def get_verbosity_flag(verbosity):
     return v_flag
 
 
-@invoke.task(default=True)
+@invoke.task(pre=[install_requirements], default=True)
 def ansible_deploy(c, env=None, tag=None, verbosity=1):
     """Deploy K8s application.
 
-    Params:
+    WARNING: if you are running this in CI, make sure to set `--verbosity=0` to prevent
+    environment variables from being logged in plain text in the CI console.
+
+    Config:
         env: The target ansible host ("staging", "production", etc ...)
-        tag: The image tag in the registry to deploy
+        tag: Image tag to deploy (default: same as default tag for build & push)
         verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
-    Usage: inv deploy.deploy --env=<ENVIRONMENT> --tag=<TAG>
+    Params:
+        env: The target ansible host ("staging", "production", etc ...)
+        tag: Image tag to deploy (default: same as default tag for build & push)
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
+
+    Usage: inv deploy.deploy --env=<ENVIRONMENT> --tag=<TAG> --verbosity=<VERBOSITY>
     """
     if env is None:
         env = c.config.env
@@ -51,7 +59,11 @@ def ansible_deploy(c, env=None, tag=None, verbosity=1):
 def ansible_playbook(c, name, extra="", verbosity=1):
     """Run a specified Ansible playbook.
 
-    Used to run a different playbook than the default playbook.
+    Run a specified Ansible playbook, located in the ``deploy/`` directory. Used to run
+    a different playbook than the default playbook.
+
+    WARNING: if you are running this in CI, make sure to set `--verbosity=0` to prevent
+    environment variables from being logged in plain text in the CI console.
 
     Params:
         name: The name of the Ansible playbook to run, including the extension
@@ -59,6 +71,7 @@ def ansible_playbook(c, name, extra="", verbosity=1):
         verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
     Usage: inv deploy.playbook <PLAYBOOK.YAML> --extra=<EXTRA> --verbosity=<VERBOSITY>
+
     """
     v_flag = get_verbosity_flag(verbosity)
     with c.cd("deploy/"):

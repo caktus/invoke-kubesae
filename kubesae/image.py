@@ -58,7 +58,8 @@ def push_image(c, tag=None):
     to the repository defined for this task.
 
     Params:
-        tag: A user supplied tag for the generated image.
+        tag: tag to apply. (Will be generated from git branch/commit
+        if not set).
 
     Usage: inv push --tag=<TAG>
     """
