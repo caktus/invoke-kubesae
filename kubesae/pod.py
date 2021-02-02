@@ -38,6 +38,7 @@ def clean_collectstatic(c):
         f"kubectl delete pods -n {c.config.namespace} -ljob-name=collectstatic"
     )
 
+
 @invoke.task
 def clean_migrations(c):
     """Removes all migration pods
@@ -48,12 +49,13 @@ def clean_migrations(c):
         f"kubectl delete pods -n {c.config.namespace} -ljob-name=migrate"
     )
 
+
 @invoke.task
 def fetch_namespace_var(c, fetch_var, hide=False):
     """Takes a variable name that may be present on a running container. Queries the
     container for the value of that variable and returns it as a Result object.
 
-    Args:
+    Params:
         fetch_var (str): An environment variable expected on the target container
         hide (bool, optional): Hides the stdout if True. Defaults to False.
     Returns:
@@ -67,13 +69,14 @@ def fetch_namespace_var(c, fetch_var, hide=False):
     )
     return c.run(command, hide=hide)
 
+
 @invoke.task()
 def get_db_dump(c, db_var, filename=None):
     """Get a database dump (into the filename).
 
-    Args:
+    Params:
         db_var (str): The variable name that the database connection is stored in.
-        filename (string, optional): A filename to store the dump. Defaults to None.
+        filename (string, optional): A filename to store the dump. If None, will default to {namespace}_database.dump.
     Usage:
         inv <ENVIRONMENT> pod.get-db-dump --db-var="<DB_VAR_NAME>"
     """
@@ -87,11 +90,12 @@ def get_db_dump(c, db_var, filename=None):
     )
     c.run(command)
 
+
 @invoke.task()
 def restore_db_from_dump(c, db_var, filename):
     """Load a database dump from a file.
 
-    Args:
+    Params:
         db_var (str): The variable the database connection is stored in.
         filename (string): An filename of the dump to restore.
     Usage:

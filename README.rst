@@ -145,6 +145,12 @@ docker-login
 
         repository: Name of docker repository, e.g. dockerhub.com/myproject.
 
+sync-media
+~~~~~~~~~~
+
+    Syncs a media bucket between two namespaces (e.g. `production` to `staging`, or
+    `staging` to `local`).
+
 Deploy
 ------
 
@@ -153,13 +159,18 @@ deploy
 
     Deploy your k8s application. (Default)
 
+    WARNING: if you are running this in CI, make sure to set `--verbosity=0` to prevent
+    environment variables from being logged in plain text in the CI console.
+
     Prereq: deploy.install
 
     Config:
 
-        env: Name of environment to deploy to
+        env: The target ansible host ("staging", "production", etc ...)
 
         tag: Image tag to deploy (default: same as default tag for build & push)
+
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
 install
 ~~~~~~~
@@ -169,8 +180,19 @@ install
 playbook
 ~~~~~~~~
 
-    Run a specified Ansible playbook, located in the ``deploy/`` directory.
+    Run a specified Ansible playbook, located in the ``deploy/`` directory. Used to run
+    a different playbook than the default playbook.
 
+    WARNING: if you are running this in CI, make sure to set `--verbosity=0` to prevent
+    environment variables from being logged in plain text in the CI console.
+
+    Config:
+
+        name: The name of the Ansible playbook to run, including the extension
+
+        extra: Additional command line arguments to ansible-playbook
+
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
 GCP
 ---
@@ -199,6 +221,12 @@ docker-login
 
         repository: Name of docker repository, e.g. us.gcr.io/myproject/myproject
 
+sync-media
+~~~~~~~~~~
+
+    Syncs a media bucket between two namespaces (e.g. `production` to `staging`, or
+    `staging` to `local`).
+
 Image
 -----
 
@@ -209,10 +237,15 @@ build
 
     Config:
 
-    Config:
+        tag: tag to apply. (Will be generated from git branch/commit
+        if not set).
+
+    Params:
 
         tag: tag to apply. (Will be generated from git branch/commit
         if not set).
+
+        dockerfile: A non-standard Dockerfile location and/or name
 
 push
 ~~~~
@@ -226,6 +259,11 @@ push
         repository: Name of docker repository, e.g. dockerhub.com/myproject.
 
         tag: tag to push. (Will be generated from git branch/commit
+        if not set).
+
+    Params:
+
+        tag: tag to apply. (Will be generated from git branch/commit
         if not set).
 
 stop
@@ -244,18 +282,50 @@ up
 
     Brings up the deployable image locally in docker-compose for testing
 
+
+Info
+----
+
+get-ansible-vars
+~~~~~~~~~~~~~~~~
+
+    Inspect ansible variables
+
+    Params:
+
+        var: A variable available to a host when called.
+
+pod-stats
+~~~~~~~~~
+
+    Report total pods vs pod capacity in a cluster.
+
+
 Pod
 ---
+
+clean-collectstatic
+~~~~~~~~~~~~~~~~~~~
+
+    Removes all collectstatic pods
+
+    Config:
+
+        namespace: the k8s namespace that will be cleaned
 
 clean-debian
 ~~~~~~~~~~~~
 
-    Removes the exited ephemeral debian pod
+    Clears away the old debian pod so a new one may live.
 
 clean-migrations
 ~~~~~~~~~~~~~~~~
 
     Removes all migration jobs
+
+    Config:
+
+        namespace: the k8s namespace that will be cleaned
 
 debian
 ~~~~~~
@@ -268,15 +338,52 @@ fetch_namespace_var
     Takes a variable name that may be present on a running container. Queries the
     container for the value of that variable and returns it as a Result object.
 
+    Config:
+
+        namespace: the k8s namespace that will be cleaned
+
+        container_name: Name of the Docker container.
+
+    Params:
+
+        fetch_var (str): An environment variable expected on the target container
+
+        hide (bool, optional): Hides the stdout if True. Defaults to False.
+
 get_db_dump
 ~~~~~~~~~~~
 
     Get a dump of an environment's database
 
+    Config:
+
+        namespace: the k8s namespace that will be cleaned
+
+        container_name: Name of the Docker container.
+
+    Params:
+
+        db_var (str): The variable name that the database connection is stored in.
+
+        filename (string, optional): A filename to store the dump. If None, will default
+	to {namespace}_database.dump.
+
 restore_db_from_dump
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
     Load a database dump file into an environment's database
+
+    Config:
+
+        namespace: the k8s namespace that will be cleaned
+
+        container_name: Name of the Docker container.
+
+    Params:
+
+        db_var (str): The variable the database connection is stored in.
+
+        filename (string): An filename of the dump to restore.
 
 shell
 ~~~~~
@@ -286,7 +393,3 @@ shell
     Config:
 
         container_name: Name of the Docker container.
-
-sync-media
-~~~~~~~~~~
-    Syncs a media bucket between two namespaces (e.g. `production` to `staging`, or `staging` to `local`).
