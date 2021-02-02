@@ -11,6 +11,7 @@ setup(
     author_email='',
     description='',
     install_requires=[
+        'boto3>=1.16',
         'invoke>=1.4',
         'colorama>=0.4',
         'ansible>=2.9',

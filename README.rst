@@ -77,6 +77,7 @@ configuration each task uses.
             "app": "appname",
             "aws": {
                 "region": "us-west-2",
+                "profile_name": "my-aws-profile",  # a profile from .aws/credentials
             },
             "repository": "123456789012.dkr.ecr.us-east-1.amazonaws.com/myproject",
             "run": {
