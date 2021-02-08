@@ -31,7 +31,7 @@ def get_backup_from_hosting(c, latest="daily", backup_name=None, list=False):
         $ inv utils.get-db-backup --latest=monthly
             Will copy the latest monthly backup to the project root
 
-        $ inv utils.get-db-backup --backup_name=yearly-2021.pgdump
+        $ inv utils.get-db-backup --backup-name=yearly-2021.pgdump
             Will copy the backup file with the name "yearly-2021.pgdump" to the project root
         
         $ inv utils.get-db-backup --list
