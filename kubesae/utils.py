@@ -6,6 +6,7 @@ from kubesae.info import print_ansible_vars
 ANSIBLE_HEADER = re.compile(r"^.*\s=>\s")
 BASE_BACKUP_BUCKET = "caktus-hosting-services-backups"
 
+
 def result_to_json(result: invoke.Result):
     value = re.sub(ANSIBLE_HEADER, "", result.stdout.strip())
     try:
@@ -13,14 +14,16 @@ def result_to_json(result: invoke.Result):
     except json.JSONDecodeError as e:
         print(f"Something went wrong. Expected ansible header. Got {result.stdout.strip()[21]}")
 
+
 @invoke.task(name="get_db_backup")
-def get_backup_from_hosting(c, latest="daily", backup_name=None, list=False):
+def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=None, list=False):
     """Downloads a backup from the caktus hosting services bucket
 
-    Args:
+    Params:
         c (invoke.Context): the running context
         latest (str, optional): Gets the latest backup from the specified temporal period. 
             Defaults to "daily". Options are "daily", "weekly", "monthly", "yearly"
+        profile (str, optional): The AWS profile to allow access to the s3 bucket. DEFAULT: "caktus"
         backup_name(str, optional): A specific backup filename.
         list(bool, optional): If set, will list the contents of the bucket for the projects folder and exit.
     
@@ -38,7 +41,7 @@ def get_backup_from_hosting(c, latest="daily", backup_name=None, list=False):
             Will list all of the backup files in the bucket for the project.
     """
     c.config.env = "production"
-    VALID_PERIODS = ['daily', 'monthly', 'yearly']
+    VALID_PERIODS = ['daily', 'weekly', 'monthly', 'yearly']
 
     project_backup_folder = print_ansible_vars(
             c,
@@ -52,14 +55,14 @@ def get_backup_from_hosting(c, latest="daily", backup_name=None, list=False):
     
     if list:
         c.run(
-            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/ --profile caktus"
+            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/ --profile {profile}"
         )
         return
 
     if latest in VALID_PERIODS and not backup_name:
 
         listing = c.run(
-            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/ --profile caktus",
+            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/ --profile {profile}",
             pty=False,
             hide="out",
         ).stdout.strip()
@@ -73,8 +76,9 @@ def get_backup_from_hosting(c, latest="daily", backup_name=None, list=False):
         backup_name = f"{latest}-{project_backup_folder}-{dates[-1]}.pgdump"
     
     c.run(
-        f"aws s3 cp s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/{backup_name} ./{backup_name} --profile caktus"
+        f"aws s3 cp s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/{backup_name} ./{backup_name} --profile {profile}"
     )
+
 
 utils = invoke.Collection("utils")
 utils.add_task(get_backup_from_hosting)
