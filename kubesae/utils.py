@@ -61,7 +61,7 @@ def get_backup_from_hosting(c, latest="daily", backup_name=None, list=False):
         listing = c.run(
             f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/ --profile caktus",
             pty=False,
-            hide=True,
+            hide="out",
         ).stdout.strip()
 
         dates = [
