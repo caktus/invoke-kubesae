@@ -20,7 +20,7 @@ def get_backup_from_hosting(c, latest="daily", backup_name=None, list=False):
     Args:
         c (invoke.Context): the running context
         latest (str, optional): Gets the latest backup from the specified temporal period. 
-            Defaults to "daily". Options are "daily", "monthly", "yearly"
+            Defaults to "daily". Options are "daily", "weekly", "monthly", "yearly"
         backup_name(str, optional): A specific backup filename.
         list(bool, optional): If set, will list the contents of the bucket for the projects folder and exit.
     
