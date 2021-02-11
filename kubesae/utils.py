@@ -44,45 +44,45 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
             Will list all of the backup files using the a locally configured AWS_PROFILE named "client-aws"
     """
     c.config.env = "production"
-    VALID_PERIODS = ['daily', 'weekly', 'monthly', 'yearly']
+    valid_periods = ['daily', 'weekly', 'monthly', 'yearly']
 
-    project_backup_folder = print_ansible_vars(
-            c,
-            var="k8s_hosting_services_project_name",
-            yaml="@group_vars/cluster.yaml",
-            pty=False,
-            hide=True,
-    )
+    if "hosting_services_backup_folder" not in c.config.keys():
+        print("A hosting services backup folder has not been defined in tasks.py for this project.")
+        print(f"Here are a list of the currently defined backup folders:")
+        c.run(
+            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/ --profile {profile}"
+        )
+        print(f"If the project is not listed it will need to be set up with Hosting services, "
+              f"see: https://github.com/caktus/ansible-role-k8s-hosting-services")
+        return
 
-    project_backup_folder = result_to_json(project_backup_folder)["k8s_hosting_services_project_name"]
-    
     if list:
         c.run(
-            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/ --profile {profile}"
+            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{c.config.hosting_services_backup_folder}/ --profile {profile}"
         )
         return
 
-    if latest not in VALID_PERIODS:
-        print(f"{latest} is not a valid backup interval. Valid intervals are {', '.join(VALID_PERIODS)}")
+    if latest not in valid_periods:
+        print(f"{latest} is not a valid backup interval. Valid intervals are {', '.join(valid_periods)}")
         exit(1)
 
     listing = c.run(
-        f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/ --profile {profile}",
+        f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{c.config.hosting_services_backup_folder}/ --profile {profile}",
         pty=False,
         hide="out",
     ).stdout.strip()
 
     dates = [
-        re.search("\d{12}", x).group(0)
+        re.search(r"\d{12}", x).group(0)
         for x in listing.split("\n")
         if re.search(f"^.*{latest}-.*", x)
     ]
 
     if not backup_name:
-        backup_name = f"{latest}-{project_backup_folder}-{dates[-1]}.pgdump"
+        backup_name = f"{latest}-{c.config.hosting_services_backup_folder}-{dates[-1]}.pgdump"
     
     c.run(
-        f"aws s3 cp s3://{BASE_BACKUP_BUCKET}/{project_backup_folder}/{backup_name} ./{backup_name} --profile {profile}"
+        f"aws s3 cp s3://{BASE_BACKUP_BUCKET}/{c.config.hosting_services_backup_folder}/{backup_name} ./{backup_name} --profile {profile}"
     )
 
 
