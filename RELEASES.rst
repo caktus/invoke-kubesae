@@ -1,6 +1,18 @@
 Releases
 ========
 
+v0.0.11, 2021-02-02
+~~~~~~~~~~~~~~~~~~~
+* Add verbosity flag to all ansible commands, and allow verbosity=0, with a WARNING
+  explaining to use that for CI deploys (#27)
+
+
+v0.0.10, 2021-01-13
+~~~~~~~~~~~~~~~~~~~
+* Add ``sync-media`` task (#24)
+* Add ``info`` package, with tasks to get ansible variables and pod statistics (#23)
+
+
 v0.0.9, 2020-10-29
 ~~~~~~~~~~~~~~~~~~
 * Add command to run an alternate playbook (#21)

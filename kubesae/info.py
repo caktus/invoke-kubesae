@@ -41,10 +41,11 @@ def print_ansible_vars(c, var=None, yaml=None, pty=True, hide=False):
     with c.cd("deploy/"):
         return c.run(cmd, pty=pty, hide=hide)
 
+
 @invoke.task
 def pod_stats(c):
     """Report total pods vs pod capacity in a cluster.
-    
+
     Params: None
 
     Usage: inv info.pod-stats
