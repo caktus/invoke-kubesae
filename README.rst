@@ -35,7 +35,7 @@ Installation
 
 pip install into your virtualenv::
 
-    $ pip install git+https://github.com/caktus/invoke-kubesae@X.Y.Z#egg=invoke-kubesae
+    $ pip install invoke-kubesae
 
 Usage
 -----
