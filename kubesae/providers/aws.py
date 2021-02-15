@@ -52,7 +52,7 @@ def sync_media_tree(
     c,
     sync_to="staging",
     media_bucket="MEDIA_STORAGE_BUCKET_NAME",
-    acl="public-read",
+    acl="private",
     local_target="./media",
     dry_run=False,
     delete=False,
@@ -63,7 +63,7 @@ def sync_media_tree(
         sync_to      (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev"), or "local".
             If set to "local" the tree will sync to a local folder. DEFAULT: staging.
         media_bucket (string, required): The variable name for media defined in settings and host_vars. DEFAULT: MEDIA_STORAGE_BUCKET_NAME
-        acl          (string, required): Sets the access policy on each object. DEFAULT: public-read
+        acl          (string, required): Sets the access policy on each object. DEFAULT: private
                                          Possible values: [
                                             private, public-read, public-read-write, authenticated-read,
                                             aws-exec-read, bucket-owner-read,bucket-owner-full-control,
