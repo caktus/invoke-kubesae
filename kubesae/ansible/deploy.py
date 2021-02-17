@@ -22,7 +22,7 @@ def get_verbosity_flag(verbosity):
     """
     v_flag = ""
     if verbosity:
-        v_flag = "-{'v'*verbosity}"
+        v_flag = f"-{'v'*verbosity}"
     return v_flag
 
 
