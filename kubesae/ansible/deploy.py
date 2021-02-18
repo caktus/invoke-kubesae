@@ -14,23 +14,45 @@ def install_requirements(c):
         c.run(f"ansible-galaxy install -f -r '{req_file}' -p roles/")
 
 
+def get_verbosity_flag(verbosity):
+    """
+    Given an integer, return a string with that number of `v` characters, prefixed
+    by a hyphen, for use as a flag to the ansible-playbook command. If verbosity is
+    zero, return the empty string.
+    """
+    v_flag = ""
+    if verbosity:
+        v_flag = f"-{'v'*verbosity}"
+    return v_flag
+
+
 @invoke.task(pre=[install_requirements], default=True)
-def ansible_deploy(c, env=None, tag=None):
+def ansible_deploy(c, env=None, tag=None, verbosity=1):
     """Deploy K8s application.
+
+    WARNING: if you are running this in CI, make sure to set `--verbosity=0` to prevent
+    environment variables from being logged in plain text in the CI console.
+
+    Config:
+        env: The target ansible host ("staging", "production", etc ...)
+        tag: Image tag to deploy (default: same as default tag for build & push)
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
     Params:
         env: The target ansible host ("staging", "production", etc ...)
-        tag: The image tag in the registry to deploy
+        tag: Image tag to deploy (default: same as default tag for build & push)
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
-    Usage: inv deploy.deploy --env=<ENVIRONMENT> --tag=<TAG>
+    Usage: inv deploy.deploy --env=<ENVIRONMENT> --tag=<TAG> --verbosity=<VERBOSITY>
     """
     if env is None:
         env = c.config.env
     if tag is None:
         tag = c.config.tag
     playbook = "deploy.yaml" if os.path.exists("deploy/deploy.yaml") else "deploy.yml"
+    v_flag = get_verbosity_flag(verbosity)
     with c.cd("deploy/"):
-        c.run(f"ansible-playbook {playbook} -l {env} -e k8s_container_image_tag={tag} -vv")
+        c.run(f"ansible-playbook {playbook} -l {env} -e k8s_container_image_tag={tag} {v_flag}")
 
 
 def get_boto_env(profile_name):
@@ -56,26 +78,39 @@ def get_boto_env(profile_name):
 
 
 @invoke.task
-def ansible_playbook(c, name, extra="", verbosity=1):
+def ansible_playbook(c, name, extra="", verbosity=1, limit=""):
     """Run a specified Ansible playbook.
 
-    Used to run a different playbook than the default playbook.
+    Run a specified Ansible playbook, located in the ``deploy/`` directory. Used to run
+    a different playbook than the default playbook.
+
+    WARNING: if you are running this in CI, make sure to set `--verbosity=0` to prevent
+    environment variables from being logged in plain text in the CI console.
 
     Params:
         name: The name of the Ansible playbook to run, including the extension
         extra: Additional command line arguments to ansible-playbook
-        verbosity: integer level of verbosity from 1 to 4 (most verbose)
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
 
-    Usage: inv deploy.playbook <PLAYBOOK>.yaml --extra=<EXTRA> --verbosity=<VERBOSITY>
+    Usage: inv deploy.playbook <PLAYBOOK.YAML> --extra=<EXTRA> --verbosity=<VERBOSITY>
+
     """
     if c.config.get("aws") and c.config.aws.get("profile_name"):
-        # if we're using AWS and using an AWS_PROFILE, then we'll adjust the shell
-        # environment for boto's sake
+        # if we're using AWS and using an AWS_PROFILE, then we'll adjust the
+        # shell environment for boto's sake
         shell_env = get_boto_env(c.config.aws.get("profile_name"))
     else:
         shell_env = {}
+    if limit:
+        limit = f"-l{limit}"
+    if "env" in c.config and c.config.env and not limit:
+        limit = f"-l{c.config.env}"
+    v_flag = get_verbosity_flag(verbosity)
     with c.cd("deploy/"):
-        c.run(f"ansible-playbook {name} {extra} -{'v'*verbosity}", env=shell_env)
+        c.run(
+            f"ansible-playbook {name} {limit} {extra} {v_flag}",
+            env=shell_env
+        )
 
 
 deploy = invoke.Collection("deploy")

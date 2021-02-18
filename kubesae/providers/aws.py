@@ -46,25 +46,26 @@ def configure_eks_kubeconfig(c, cluster=None, region=None):
         region = c.config.aws.get("region", "us-east-1")
     c.run(f"aws eks update-kubeconfig --name {cluster} --region {region}")
 
+
 @invoke.task(name="sync_media")
 def sync_media_tree(
     c,
     sync_to="staging",
     media_bucket="MEDIA_STORAGE_BUCKET_NAME",
-    acl="public-read",
+    acl="private",
     local_target="./media",
     dry_run=False,
     delete=False,
 ):
-    """Sync an S3 media tree for a given environment/namespace to another. 
+    """Syncs a media bucket between two namespaces (e.g. `production` to `staging`, or `staging` to `local`).
 
-    Args:
-        sync_to      (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev"), or "local". 
+    Params:
+        sync_to      (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev"), or "local".
             If set to "local" the tree will sync to a local folder. DEFAULT: staging.
         media_bucket (string, required): The variable name for media defined in settings and host_vars. DEFAULT: MEDIA_STORAGE_BUCKET_NAME
-        acl          (string, required): Sets the access policy on each object. DEFAULT: public-read
+        acl          (string, required): Sets the access policy on each object. DEFAULT: private
                                          Possible values: [
-                                            private, public-read, public-read-write, authenticated-read, 
+                                            private, public-read, public-read-write, authenticated-read,
                                             aws-exec-read, bucket-owner-read,bucket-owner-full-control,
                                             log-delivery-write
                                         ]
@@ -74,16 +75,16 @@ def sync_media_tree(
         local        (boolean, optional): If set, syncs media files to the location defined by the "local_target" parameter.
 
     Usage:
-        inv production aws.sync-media --dry-run: 
+        inv production aws.sync-media --dry-run:
             Will simulate a sync from production to staging using the s3 bucket defined in MEDIA_STORAGE_BUCKET with no acl applied.
-        
+
         inv production aws.sync-media --dry-run --delete
             Will display the files that will be deleted from the staging s3 bucket defined in MEDIA_STORAGE_BUCKET.
-        
+
         inv production aws.sync-media --media-bucket="MEDIA" --acl public-read --delete
             Will sync files from the s3 bucket defined in the environment variable "MEDIA" to a staging bucket with the acl of each object set to 'public-read', and
             will delete objects on the staging bucket that do not exist on the production bucket.
-        
+
         inv production aws.sync-media --sync-to="local" --local-target="./public/media"
             Will sync files from the production bucket to "<PROJECT_ROOT>/public/media"
     """
@@ -91,7 +92,7 @@ def sync_media_tree(
     target_media_name = ""
     dr = ""
     dl = ""
-    
+
     source_media_name = fetch_namespace_var(
         c, fetch_var=f"{media_bucket}"
     ).stdout.strip()
