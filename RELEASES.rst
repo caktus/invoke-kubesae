@@ -1,6 +1,12 @@
 Releases
 ========
 
+v0.0.12, 2021-02-18
+~~~~~~~~~~~~~~~~~~~
+* Add support for Ansible `--limit` with `deploy.playbook` task
+* Fix bug with verbosity flag
+
+
 v0.0.11, 2021-02-02
 ~~~~~~~~~~~~~~~~~~~
 * Add verbosity flag to all ansible commands, and allow verbosity=0, with a WARNING

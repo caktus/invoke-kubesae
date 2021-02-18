@@ -22,7 +22,7 @@ def get_verbosity_flag(verbosity):
     """
     v_flag = ""
     if verbosity:
-        v_flag = "-{'v'*verbosity}"
+        v_flag = f"-{'v'*verbosity}"
     return v_flag
 
 
@@ -56,7 +56,7 @@ def ansible_deploy(c, env=None, tag=None, verbosity=1):
 
 
 @invoke.task
-def ansible_playbook(c, name, extra="", verbosity=1):
+def ansible_playbook(c, name, extra="", verbosity=1, limit=""):
     """Run a specified Ansible playbook.
 
     Run a specified Ansible playbook, located in the ``deploy/`` directory. Used to run
@@ -73,9 +73,13 @@ def ansible_playbook(c, name, extra="", verbosity=1):
     Usage: inv deploy.playbook <PLAYBOOK.YAML> --extra=<EXTRA> --verbosity=<VERBOSITY>
 
     """
+    if limit:
+        limit = f"-l{limit}"
+    if "env" in c.config and c.config.env and not limit:
+        limit = f"-l{c.config.env}"
     v_flag = get_verbosity_flag(verbosity)
     with c.cd("deploy/"):
-        c.run(f"ansible-playbook {name} {extra} {v_flag}")
+        c.run(f"ansible-playbook {name} {limit} {extra} {v_flag}")
 
 
 deploy = invoke.Collection("deploy")
