@@ -1,5 +1,5 @@
 invoke-kubesae
-=============
+==============
 
 The kubesae library is an `invoke <http://docs.pyinvoke.org/en/stable/>`_ tasks library
 to provide some basic management tasks for working with a kubernetes cluster.
@@ -77,6 +77,7 @@ configuration each task uses.
             "app": "appname",
             "aws": {
                 "region": "us-west-2",
+                "profile_name": "my-aws-profile",  # a profile from .aws/credentials
             },
             "repository": "123456789012.dkr.ecr.us-east-1.amazonaws.com/myproject",
             "run": {
@@ -85,6 +86,15 @@ configuration each task uses.
             },
         }
     )
+
+.. note::
+   The ``profile_name`` in the config above is only used when you run custom playbooks,
+   not the main deploy playbook. It is used because boto doesn't work well with
+   AssumedRoles, so if your playbook needs an AssumedRole we have to convert the role
+   credentials to standard AWS access_key/secret credentials and we use the profile above
+   to do that. This assumes that all devs in your project are using the same profile
+   name, but if you want to customize it, you can create a project-level task to
+   customize it.
 
 
 Now you can see all of the currently available tasks by running::
