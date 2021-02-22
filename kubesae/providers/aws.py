@@ -54,6 +54,7 @@ def sync_media_tree(
     media_bucket="MEDIA_STORAGE_BUCKET_NAME",
     acl="private",
     local_target="./media",
+    bucket_path="",
     dry_run=False,
     delete=False,
 ):
@@ -71,8 +72,8 @@ def sync_media_tree(
                                         ]
         local_target (string, optional): Sets a target directory for local syncs. Defaults to "./media"
         dry_run      (boolean, optional): Outputs the result to stdout without applying the action
+        bucket_path (string, optional): If set, appends to the bucket the extra path information.
         delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
-        local        (boolean, optional): If set, syncs media files to the location defined by the "local_target" parameter.
 
     Usage:
         inv production aws.sync-media --dry-run:
@@ -87,6 +88,8 @@ def sync_media_tree(
 
         inv production aws.sync-media --sync-to="local" --local-target="./public/media"
             Will sync files from the production bucket to "<PROJECT_ROOT>/public/media"
+
+        inv production aws.sync-media --sync-to="local" --local-target="./public/media/chandler-bing" --bucket-path="chandler-bing"
     """
     sync_from = c.config.env
     target_media_name = ""
@@ -96,6 +99,9 @@ def sync_media_tree(
     source_media_name = fetch_namespace_var(
         c, fetch_var=f"{media_bucket}"
     ).stdout.strip()
+
+    if bucket_path:
+        source_media_name += f"/{bucket_path.strip('/')}"
 
     if sync_from == sync_to:
         print("Source and Target environments are the same. Nothing to be done.")
