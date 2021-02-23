@@ -43,7 +43,6 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
         $ inv utils.get-db-backup --list --profile="client-aws"
             Will list all of the backup files using the a locally configured AWS_PROFILE named "client-aws"
     """
-    c.config.env = "production"
     valid_periods = ['daily', 'weekly', 'monthly', 'yearly']
 
     if "hosting_services_backup_folder" not in c.config.keys():
@@ -66,19 +65,19 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
         print(f"{latest} is not a valid backup interval. Valid intervals are {', '.join(valid_periods)}")
         exit(1)
 
-    listing = c.run(
-        f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{c.config.hosting_services_backup_folder}/ --profile {profile}",
-        pty=False,
-        hide="out",
-    ).stdout.strip()
-
-    dates = [
-        re.search(r"\d{12}", x).group(0)
-        for x in listing.split("\n")
-        if re.search(f"^.*{latest}-.*", x)
-    ]
-
     if not backup_name:
+        listing = c.run(
+            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{c.config.hosting_services_backup_folder}/ --profile {profile}",
+            pty=False,
+            hide="out",
+        ).stdout.strip()
+
+        dates = [
+            re.search(r"\d{12}", x).group(0)
+            for x in listing.split("\n")
+            if re.search(f"^.*{latest}-.*", x)
+        ]
+
         backup_name = f"{latest}-{c.config.hosting_services_backup_folder}-{dates[-1]}.pgdump"
     
     c.run(

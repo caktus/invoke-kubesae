@@ -286,20 +286,23 @@ up
 Info
 ----
 
-get-ansible-vars
+print-ansible-vars
 ~~~~~~~~~~~~~~~~
 
-    Inspect ansible variables
+    A command to inspect any ansible variable by environment. If no variable is specified then it will
+    print out the current k8s environment variables.
 
     Params:
-
-        var: A variable available to a host when called.
+        c (invoke.Context): The current invoke context.
+        var (string, optional): The ansible variable you want to expose. Defaults to None.
+        yaml (string, optional): An ansible path. Defaults to None.
+        pty (bool, optional): If piping the output to another command you might need this to be False. Defaults to True.
+        hide (bool, optional): If you don't want the results to print to the console set to "out". Defaults to False.
 
 pod-stats
 ~~~~~~~~~
 
     Report total pods vs pod capacity in a cluster.
-
 
 Pod
 ---
@@ -393,3 +396,29 @@ shell
     Config:
 
         container_name: Name of the Docker container.
+
+Utils
+-----
+
+get_backup_from_hosting
+~~~~~~~~~~~~~~~~~~~~~~~
+
+    Downloads a backup from the caktus hosting services bucket
+
+    Params:
+
+        c (invoke.Context): the running context
+        latest (str, optional): Gets the latest backup from the specified temporal period. Defaults to "daily". Options are "daily", "weekly", "monthly", "yearly"
+        profile (str, optional): The AWS profile to allow access to the s3 bucket. DEFAULT: "caktus"
+        backup_name(str, optional): A specific backup filename.
+        list(bool, optional): If set, will list the contents of the bucket for the projects folder and exit.
+
+    The use of this task requires the addition of `hosting_services_backup_folder` to your `tasks.py`
+    configuration:
+
+        ns.configure(
+        {
+            ...
+            "hosting_services_backup_folder": "<PROJECT_FOLDER>",
+            ...
+        }
