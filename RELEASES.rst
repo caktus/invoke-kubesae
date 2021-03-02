@@ -1,6 +1,19 @@
 Releases
 ========
 
+v0.0.13, 2021-FIXME
+~~~~~~~~~~~~~~~~~~~~
+* Make custom playbooks compatible with boto. This requires that you add a
+  ``aws.profile_name`` key in your tasks definition which points to an AWS_PROFILE that
+  is an AssumedRole.
+
+
+v0.0.12, 2021-02-18
+~~~~~~~~~~~~~~~~~~~
+* Add support for Ansible `--limit` with `deploy.playbook` task
+* Fix bug with verbosity flag
+
+
 v0.0.11, 2021-02-02
 ~~~~~~~~~~~~~~~~~~~
 * Add verbosity flag to all ansible commands, and allow verbosity=0, with a WARNING

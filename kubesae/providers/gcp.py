@@ -47,12 +47,14 @@ def configure_gcp_kubeconfig(c, cluster=None, region=None):
     c.run(f"gcloud config set project {c.config.app}")
     c.run(f"gcloud container clusters get-credentials --region={region} {cluster}")
 
+
 @invoke.task(name="sync_media")
 def sync_media_tree(
     c,
     sync_to="staging",
     media_bucket="MEDIA_STORAGE_BUCKET_NAME",
     local_target="./media",
+    bucket_path="",
     dry_run=False,
     delete=False,
 ):
@@ -63,6 +65,7 @@ def sync_media_tree(
             If set to "local" will sync the tree to a local folder. DEFAULT: staging.
         media_bucket (string, required): The variable name for media defined in settings and host_vars. DEFAULT: MEDIA_STORAGE_BUCKET_NAME
         local_target (string, optional): Sets a target directory for local syncs. Defaults to "./media"
+        bucket_path (string, optional): If set, appends to the bucket the extra path information.
         dry_run      (boolean, optional): Outputs the result to stdout without applying the action
         delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
 
@@ -80,6 +83,7 @@ def sync_media_tree(
         inv production gcp.sync-media --sync-to="local" --local-target="./public/media"
             Will sync files from the production bucket to "<PROJECT_ROOT>/public/media"
 
+        inv production gcp.sync-media --sync-to="local" --local-target="./public/media/chandler-bing" --bucket-path="chandler-bing"
     """
     sync_from = c.config.env
     target_media_name = ""
@@ -89,6 +93,9 @@ def sync_media_tree(
     source_media_name = fetch_namespace_var(
         c, fetch_var=f"{media_bucket}"
     ).stdout.strip()
+
+    if bucket_path:
+        source_media_name += f"/{bucket_path.strip('/')}"
 
     if sync_from == sync_to:
         print("Source and Target environments are the same. Nothing to be done.")

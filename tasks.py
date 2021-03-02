@@ -26,6 +26,7 @@ ns.configure(
         "app": "myproject",
         "aws": {
             "region": "us-west-2",
+            "profile_name": "my-aws-profile",  # a profile from .aws/credentials
         },
         "cluster": "Myproject-EKS-cluster",
         "repository": "123456789012.dkr.ecr.us-east-1.amazonaws.com/myproject",
