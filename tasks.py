@@ -30,6 +30,7 @@ ns.configure(
         },
         "cluster": "Myproject-EKS-cluster",
         "repository": "123456789012.dkr.ecr.us-east-1.amazonaws.com/myproject",
+        "hosting_services_backup_folder": "myproject",
         "run": {
             "echo": True,
             "pty": True,
