@@ -45,20 +45,23 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
     """
     valid_periods = ['daily', 'weekly', 'monthly', 'yearly']
 
-    if "hosting_services_backup_folder" not in c.config.keys():
+    if c.config.get("hosting_services_backup_bucket"):
+        bucket = f"s3://{c.config.hosting_services_backup_bucket.strip('/')}"
+    else:
+        bucket = f"s3://{BASE_BACKUP_BUCKET.strip('/')}"
+
+    if c.config.get("hosting_services_backup_folder"):
+        bucket_folder = f"{bucket}/{c.config.hosting_services_backup_folder.strip('/')}"
+    else:
         print("A hosting services backup folder has not been defined in tasks.py for this project.")
-        print(f"Here are a list of the currently defined backup folders:")
-        c.run(
-            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/ --profile {profile}"
-        )
-        print(f"If the project is not listed it will need to be set up with Hosting services, "
-              f"see: https://github.com/caktus/ansible-role-k8s-hosting-services")
+        print("Here are a list of the currently defined backup folders:")
+        c.run(f"aws s3 ls {bucket} --profile {profile}")
+        print("If the project is not listed it will need to be set up with Hosting services, "
+              "see: https://github.com/caktus/ansible-role-k8s-hosting-services")
         return
 
     if list:
-        c.run(
-            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{c.config.hosting_services_backup_folder}/ --profile {profile}"
-        )
+        c.run(f"aws s3 ls {bucket_folder}/ --profile {profile}")
         return
 
     if latest not in valid_periods:
@@ -67,7 +70,7 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
 
     if not backup_name:
         listing = c.run(
-            f"aws s3 ls s3://{BASE_BACKUP_BUCKET}/{c.config.hosting_services_backup_folder}/ --profile {profile}",
+            f"aws s3 ls {bucket_folder}/ --profile {profile}",
             pty=False,
             hide="out",
         ).stdout.strip()
@@ -81,7 +84,7 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
         backup_name = f"{latest}-{c.config.hosting_services_backup_folder}-{dates[-1]}.pgdump"
     
     c.run(
-        f"aws s3 cp s3://{BASE_BACKUP_BUCKET}/{c.config.hosting_services_backup_folder}/{backup_name} ./{backup_name} --profile {profile}"
+        f"aws s3 cp {bucket_folder}/{backup_name} ./{backup_name} --profile {profile}"
     )
 
 
