@@ -1,5 +1,5 @@
 invoke-kubesae
-=============
+==============
 
 The kubesae library is an `invoke <http://docs.pyinvoke.org/en/stable/>`_ tasks library
 to provide some basic management tasks for working with a kubernetes cluster.
@@ -77,6 +77,7 @@ configuration each task uses.
             "app": "appname",
             "aws": {
                 "region": "us-west-2",
+                "profile_name": "my-aws-profile",  # a profile from .aws/credentials
             },
             "repository": "123456789012.dkr.ecr.us-east-1.amazonaws.com/myproject",
             "run": {
@@ -85,6 +86,15 @@ configuration each task uses.
             },
         }
     )
+
+.. note::
+   The ``profile_name`` in the config above is only used when you run custom playbooks,
+   not the main deploy playbook. It is used because boto doesn't work well with
+   AssumedRoles, so if your playbook needs an AssumedRole we have to convert the role
+   credentials to standard AWS access_key/secret credentials and we use the profile above
+   to do that. This assumes that all devs in your project are using the same profile
+   name, but if you want to customize it, you can create a project-level task to
+   customize it.
 
 
 Now you can see all of the currently available tasks by running::
@@ -286,20 +296,23 @@ up
 Info
 ----
 
-get-ansible-vars
+print-ansible-vars
 ~~~~~~~~~~~~~~~~
 
-    Inspect ansible variables
+    A command to inspect any ansible variable by environment. If no variable is specified then it will
+    print out the current k8s environment variables.
 
     Params:
-
-        var: A variable available to a host when called.
+        c (invoke.Context): The current invoke context.
+        var (string, optional): The ansible variable you want to expose. Defaults to None.
+        yaml (string, optional): An ansible path. Defaults to None.
+        pty (bool, optional): If piping the output to another command you might need this to be False. Defaults to True.
+        hide (bool, optional): If you don't want the results to print to the console set to "out". Defaults to False.
 
 pod-stats
 ~~~~~~~~~
 
     Report total pods vs pod capacity in a cluster.
-
 
 Pod
 ---
@@ -393,3 +406,29 @@ shell
     Config:
 
         container_name: Name of the Docker container.
+
+Utils
+-----
+
+get_backup_from_hosting
+~~~~~~~~~~~~~~~~~~~~~~~
+
+    Downloads a backup from the caktus hosting services bucket
+
+    Params:
+
+        c (invoke.Context): the running context
+        latest (str, optional): Gets the latest backup from the specified temporal period. Defaults to "daily". Options are "daily", "weekly", "monthly", "yearly"
+        profile (str, optional): The AWS profile to allow access to the s3 bucket. DEFAULT: "caktus"
+        backup_name(str, optional): A specific backup filename.
+        list(bool, optional): If set, will list the contents of the bucket for the projects folder and exit.
+
+    The use of this task requires the addition of `hosting_services_backup_folder` to your `tasks.py`
+    configuration:
+
+        ns.configure(
+        {
+            ...
+            "hosting_services_backup_folder": "<PROJECT_FOLDER>",
+            ...
+        }

@@ -1,6 +1,32 @@
 Releases
 ========
 
+
+v0.0.15, 2021-03-24
+~~~~~~~~~~~~~~~~~~~~
+
+* Add support for using any source S3 backup bucket with `config.hosting_services_backup_bucket`
+
+
+v0.0.14, 2021-03-02
+~~~~~~~~~~~~~~~~~~~~
+
+* Adds get_backup_from_hosting to allow retrieving backups that are created and stored using caktus-hosting-backups
+
+
+v0.0.13, 2021-02-22
+~~~~~~~~~~~~~~~~~~~~
+* Make custom playbooks compatible with boto. This requires that you add a
+  ``aws.profile_name`` key in your tasks definition which points to an AWS_PROFILE that
+  is an AssumedRole.
+
+
+v0.0.12, 2021-02-18
+~~~~~~~~~~~~~~~~~~~
+* Add support for Ansible `--limit` with `deploy.playbook` task
+* Fix bug with verbosity flag
+
+
 v0.0.11, 2021-02-02
 ~~~~~~~~~~~~~~~~~~~
 * Add verbosity flag to all ansible commands, and allow verbosity=0, with a WARNING
