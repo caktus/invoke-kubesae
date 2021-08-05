@@ -297,7 +297,7 @@ Info
 ----
 
 print-ansible-vars
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
     A command to inspect any ansible variable by environment. If no variable is specified then it will
     print out the current k8s environment variables.
@@ -378,8 +378,7 @@ get_db_dump
 
         db_var (str): The variable name that the database connection is stored in.
 
-        filename (string, optional): A filename to store the dump. If None, will default
-	to {namespace}_database.dump.
+        filename (string, optional): A filename to store the dump. If None, will default to {namespace}_database.dump.
 
 restore_db_from_dump
 ~~~~~~~~~~~~~~~~~~~~
@@ -426,9 +425,4 @@ get_backup_from_hosting
     The use of this task requires the addition of `hosting_services_backup_folder` to your `tasks.py`
     configuration:
 
-        ns.configure(
-        {
-            ...
-            "hosting_services_backup_folder": "<PROJECT_FOLDER>",
-            ...
-        }
+        ns.configure({"hosting_services_backup_folder": "<PROJECT_FOLDER>",})
