@@ -4,12 +4,15 @@ from setuptools import setup, find_packages
 
 setup(
     name="invoke-kubesae",
-    version="0.0.15",
+    version="0.0.16",
     packages=find_packages(exclude=["tests"]),
     url="https://github.com/caktus/invoke-kubesae",
     author="Caktus Group",
-    author_email="",
-    description="",
+    author_email="solutions@caktusgroup.com",
+    description="An invoke tasks library to manage a kubernetes project.",
+    long_description=open("README.rst").read(),
+    license="BSD",
+    include_package_data=True,
     install_requires=[
         "boto3>=1.16",
         "invoke>=1.4",
@@ -18,9 +21,11 @@ setup(
     ],
     python_requires=">=3.5",
     classifiers=[
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
-        "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
+        "Topic :: Software Development :: Build Tools",
     ],
 )
