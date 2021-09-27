@@ -88,5 +88,31 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
     )
 
 
+@invoke.task
+def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profile='caktus'):
+    """
+    count_backups sorts the backups generated with caktus-hosting-services cronjob and prints the number found of each type.
+
+    :param c: Context
+    :param bucket_identifier: The name of the bucket that holds the backups.
+    :param profile: The profile with list access to the bucket.
+    """
+
+    result = c.run(
+        f"aws s3 ls s3://{bucket_identifier}/{c.config.app}/ --profile={profile}",
+        hide="out",
+    ).stdout.strip()
+    ds = {
+        "daily": len(re.findall("daily-.*\\.pgdump", result)),
+        "weekly": len(re.findall("weekly-.*\\.pgdump", result)),
+        "monthly": len(re.findall("monthly-.*\\.pgdump", result)),
+        "yearly": len(re.findall("yearly-.*\\.pgdump", result)),
+    }
+    print("Backups found:\n")
+    for k, v in ds.items():
+        print(f"{k}\t\t{v} backups\n")
+
+
 utils = invoke.Collection("utils")
 utils.add_task(get_backup_from_hosting)
+utils.add_task(count_backups)
