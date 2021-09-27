@@ -118,8 +118,7 @@ def sync_media_tree(
         dr = "-n"
     if delete:
         dl = "-d"
-
-    c.run(f"gsutil rsync -r {dr} {dl} gs://{source_media_name} {target_media_name}")
+    c.run(f"gsutil rsync -r -p {dr} {dl} gs://{source_media_name} {target_media_name}")
 
 
 gcp = invoke.Collection("gcp")
