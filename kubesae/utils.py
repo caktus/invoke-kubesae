@@ -6,6 +6,12 @@ from kubesae.info import print_ansible_vars
 ANSIBLE_HEADER = re.compile(r"^.*\s=>\s")
 BASE_BACKUP_BUCKET = "caktus-hosting-services-backups"
 
+def process_backups(schedule_list, search_list):
+    result = {}
+    for schedule in schedule_list:
+        result[schedule] = len(re.findall(f"{schedule}-.*\\.pgdump", search_list))
+    return result
+
 
 def result_to_json(result: invoke.Result):
     value = re.sub(ANSIBLE_HEADER, "", result.stdout.strip())
@@ -89,28 +95,32 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
 
 
 @invoke.task
-def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profile='caktus'):
+def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profile='caktus', extra_schedules=""):
     """
     count_backups sorts the backups generated with caktus-hosting-services cronjob and prints the number found of each type.
 
     :param c: Context
     :param bucket_identifier: The name of the bucket that holds the backups.
     :param profile: The profile with list access to the bucket.
+    :param extra_schedules: A string passed in with a comma delimiting each additional schedule name.
     """
+    extended = []
+    if extra_schedules:
+        extended = [x for x in extra_schedules.split(",") if x != '']
 
-    result = c.run(
-        f"aws s3 ls s3://{bucket_identifier}/{c.config.app}/ --profile={profile}",
+    schedules = ['daily', 'weekly', 'monthly', 'yearly'] + extended
+    hosting_bucket = c.hosting_services_backup_folder if c.config.hosting_services_backup_folder else c.config.app
+
+    all_backups = c.run(
+        f"aws s3 ls s3://{bucket_identifier}/{hosting_bucket}/ --profile={profile}",
         hide="out",
     ).stdout.strip()
-    ds = {
-        "daily": len(re.findall("daily-.*\\.pgdump", result)),
-        "weekly": len(re.findall("weekly-.*\\.pgdump", result)),
-        "monthly": len(re.findall("monthly-.*\\.pgdump", result)),
-        "yearly": len(re.findall("yearly-.*\\.pgdump", result)),
-    }
+
+    sorted_backups = process_backups(schedules, all_backups)
+
     print("Backups found:\n")
-    for k, v in ds.items():
-        print(f"{k}\t\t{v} backups\n")
+    for k, v in sorted_backups.items():
+        print(f"{v:03d}: {k}\n")
 
 
 utils = invoke.Collection("utils")
