@@ -74,7 +74,7 @@ def sync_media_tree(
         local_target (string, optional): Sets a target directory for local syncs. Defaults to "./media"
         dry_run      (boolean, optional): Outputs the result to stdout without applying the action
         bucket_path (string, optional): If set, appends to the bucket the extra path information.
-        sibling     (boolean, optional): If set, assumes that the target bucket is on the same S3 bucket but in a different location.
+        sibling     (boolean, optional): If set, assumes that the target bucket is on the same S3 bucket but in a different location folder. Uses the `sync_to` for target path.
         delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
 
     Usage:
