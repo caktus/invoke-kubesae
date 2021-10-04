@@ -55,6 +55,7 @@ def sync_media_tree(
     acl="private",
     local_target="./media",
     bucket_path="",
+    sibling=False,
     dry_run=False,
     delete=False,
 ):
@@ -73,6 +74,7 @@ def sync_media_tree(
         local_target (string, optional): Sets a target directory for local syncs. Defaults to "./media"
         dry_run      (boolean, optional): Outputs the result to stdout without applying the action
         bucket_path (string, optional): If set, appends to the bucket the extra path information.
+        sibling     (boolean, optional): If set, assumes that the target bucket is on the same S3 bucket but in a different location.
         delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
 
     Usage:
@@ -95,6 +97,7 @@ def sync_media_tree(
     target_media_name = ""
     dr = ""
     dl = ""
+    sibling_bucket = ""
 
     source_media_name = fetch_namespace_var(
         c, fetch_var=f"{media_bucket}"
@@ -115,10 +118,15 @@ def sync_media_tree(
         cc.config.namespace = f"{c.config.app}-{sync_to}"
         cc.config.container_name = c.config.container_name
 
+        if sibling:
+            cc.config.env = c.config.env
+            cc.config.namespace = c.config.namespace
+            sibling_bucket = f"/{sync_to}"
+
         target_media_name = fetch_namespace_var(
             cc, fetch_var=f"{media_bucket}"
         ).stdout.strip()
-        target_media_name = f"s3://{target_media_name}"
+        target_media_name = f"s3://{target_media_name}{sibling_bucket}"
 
     if dry_run:
         dr = "--dryrun"
