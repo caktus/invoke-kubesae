@@ -5,6 +5,7 @@ v0.0.17, 2021-10-04
 ~~~~~~~~~~~~~~~~~~~~
 
 * Adds a utility `count_backups` that counts available backups in hosting services s3 buckets.
+* Adds a utility `list-backup-schedules` to list schedules present in a project's backup bucket.
 
 v0.0.16, 2021-08-05
 ~~~~~~~~~~~~~~~~~~~~
