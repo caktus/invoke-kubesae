@@ -6,6 +6,7 @@ v0.0.17, 2021-10-04
 
 * Adds a utility `count_backups` that counts available backups in hosting services s3 buckets.
 * Adds a utility `list-backup-schedules` to list schedules present in a project's backup bucket.
+* Adds a flag to `aws.sync-media` that allows projects with a single bucket but multiple media folders, to sync between those folders.
 
 v0.0.16, 2021-08-05
 ~~~~~~~~~~~~~~~~~~~~
