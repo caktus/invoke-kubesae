@@ -434,13 +434,10 @@ count_backups
 
     Params:
 
-    `c` (invoke.Context): The running context
-    `bucket_identifier` (str, optional): The name of the bucket that holds the backups.
-        DEFAULT: `caktus-hosting-services-backups`
-    `profile` (str, optional): The AWS profile with list access to the bucket.
-        DEFAULT: `caktus`
-    `extra_schedules` (str, optional): A comma delimited string with each additional schedule name no spaces.
-        EXAMPLE: `'every2hours,every-hour,every-thursday'`
+        `c` (invoke.Context): The running context
+        `bucket_identifier` (str, optional): The name of the bucket that holds the backups. DEFAULT: `caktus-hosting-services-backups`
+        `profile` (str, optional): The AWS profile with list access to the bucket. DEFAULT: `caktus`
+        `extra_schedules` (str, optional): A comma delimited string with each additional schedule name no spaces. EXAMPLE: `'every2hours,every-hour,every-thursday'`
 
 list_backup_schedules
 ~~~~~~~~~~~~~~~~~~~~~
@@ -449,9 +446,6 @@ list_backup_schedules
 
     Params:
 
-    `c` (invoke.Context): The running context
-    `bucket_identifier` (str, optional): The name of the bucket that holds the backups.
-        DEFAULT: `caktus-hosting-services-backups`
-    `profile` (str, optional): The AWS profile with list access to the bucket.
-        DEFAULT: `caktus`
-
+        `c` (invoke.Context): The running context
+        `bucket_identifier` (str, optional): The name of the bucket that holds the backups. DEFAULT: `caktus-hosting-services-backups`
+        `profile` (str, optional): The AWS profile with list access to the bucket. DEFAULT: `caktus`

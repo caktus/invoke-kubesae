@@ -11,6 +11,7 @@ setup(
     author_email="solutions@caktusgroup.com",
     description="An invoke tasks library to manage a kubernetes project.",
     long_description=open("README.rst").read(),
+    long_description_content_type='text/x-rst',
     license="BSD",
     include_package_data=True,
     install_requires=[
