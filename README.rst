@@ -426,3 +426,32 @@ get_backup_from_hosting
     configuration:
 
         ns.configure({"hosting_services_backup_folder": "<PROJECT_FOLDER>",})
+
+count_backups
+~~~~~~~~~~~~~
+
+    Sorts the backups generated with caktus-hosting-services cronjob and prints the number found of each type.
+
+    Params:
+
+    `c` (invoke.Context): The running context
+    `bucket_identifier` (str, optional): The name of the bucket that holds the backups.
+        DEFAULT: `caktus-hosting-services-backups`
+    `profile` (str, optional): The AWS profile with list access to the bucket.
+        DEFAULT: `caktus`
+    `extra_schedules` (str, optional): A comma delimited string with each additional schedule name no spaces.
+        EXAMPLE: `'every2hours,every-hour,every-thursday'`
+
+list_backup_schedules
+~~~~~~~~~~~~~~~~~~~~~
+
+    Lists the backup schedules found in a project's hosting bucket.
+
+    Params:
+
+    `c` (invoke.Context): The running context
+    `bucket_identifier` (str, optional): The name of the bucket that holds the backups.
+        DEFAULT: `caktus-hosting-services-backups`
+    `profile` (str, optional): The AWS profile with list access to the bucket.
+        DEFAULT: `caktus`
+
