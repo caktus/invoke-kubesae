@@ -1,6 +1,11 @@
 Releases
 ========
 
+v0.0.18, TBD
+~~~~~~~~~~~~~~~~~~~~
+
+* Support multi-stage Dockerfiles and allow setting the target build stage (`--target`)
+
 v0.0.17, 2021-10-04
 ~~~~~~~~~~~~~~~~~~~~
 
