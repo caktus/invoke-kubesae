@@ -250,12 +250,17 @@ build
         tag: tag to apply. (Will be generated from git branch/commit
         if not set).
 
+        app_build_target: The dockerfile target for a multistage build. Most often this will be "deploy"
+
     Params:
 
         tag: tag to apply. (Will be generated from git branch/commit
         if not set).
 
         dockerfile: A non-standard Dockerfile location and/or name
+
+        target: Use if the config var has not been set in tasks, or you need to target a non-standard build stage.
+
 
 push
 ~~~~

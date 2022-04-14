@@ -1,10 +1,11 @@
 Releases
 ========
 
-v0.0.18, TBD
+v0.0.18, 2021-14-08
 ~~~~~~~~~~~~~~~~~~~~
 
 * Support multi-stage Dockerfiles and allow setting the target build stage (`--target`)
+* Adds a default value (DATABASE_URL) for `db_var` on tasks requiring database variable name.
 
 v0.0.17, 2021-10-04
 ~~~~~~~~~~~~~~~~~~~~
