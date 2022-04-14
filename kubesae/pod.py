@@ -1,5 +1,6 @@
 import invoke
 
+DEFAULT_DB_VAR="DATABASE_URL"
 
 @invoke.task(default=True)
 def shell(c):
@@ -71,11 +72,11 @@ def fetch_namespace_var(c, fetch_var, hide=False):
 
 
 @invoke.task()
-def get_db_dump(c, db_var, filename=None):
+def get_db_dump(c, db_var=DEFAULT_DB_VAR, filename=None):
     """Get a database dump (into the filename).
 
     Params:
-        db_var (str): The variable name that the database connection is stored in.
+        db_var (str): The variable name that the database connection is stored in. DEFAULT: DATABASE_URL
         filename (string, optional): A filename to store the dump. If None, will default to {namespace}_database.dump.
     Usage:
         inv <ENVIRONMENT> pod.get-db-dump --db-var="<DB_VAR_NAME>"
@@ -92,11 +93,11 @@ def get_db_dump(c, db_var, filename=None):
 
 
 @invoke.task()
-def restore_db_from_dump(c, db_var, filename):
+def restore_db_from_dump(c,  filename, db_var=DEFAULT_DB_VAR):
     """Load a database dump from a file.
 
     Params:
-        db_var (str): The variable the database connection is stored in.
+        db_var (str): The variable the database connection is stored in. DEFAULT: DATABASE_URL
         filename (string): An filename of the dump to restore.
     Usage:
         inv <ENVIRONMENT> pod.restore-db-from-dump --db-var="<DB_VAR_NAME>" --filename="<PATH/TO/DBFILE>"
