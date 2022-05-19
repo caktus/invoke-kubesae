@@ -106,7 +106,7 @@ def restore_db_from_dump(c,  filename, db_var=DEFAULT_DB_VAR):
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
         f"deploy/{c.config.container_name} -- "
-        f"pg_restore --no-owner --clean --if-exists --dbname {database_url} < {filename}"
+        f"pg_restore --no-privileges --no-owner --clean --if-exists --dbname {database_url} < {filename}"
     )
     c.run(command)
 
