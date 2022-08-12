@@ -33,6 +33,7 @@ def debian(c, debian_flavor="bullseye"):
         stretch: psql-client-9
 
     Usage: inv pod.debian
+    Usage: inv pod.debian --debian-flavor stretch
     """
     debian_flavors = ['bullseye', 'buster', 'stretch']
     if debian_flavor not in debian_flavors:
