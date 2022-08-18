@@ -21,12 +21,25 @@ def clean_debian(c):
 
 
 @invoke.task(pre=[clean_debian])
-def debian(c):
-    """An ephemeral container with which to run sysadmin tasks on the cluster
+def debian(c, debian_flavor="bullseye"):
+    """An ephemeral container with which to run sysadmin tasks on the cluster.
+
+    The default image is bullseye-slim, but we can select the image we need from a
+    list of supported images: ('bullseye', 'buster', 'stretch')
+
+    Postgres client provided:
+        bullseye: psql-client-13
+        buster: psql-client-11
+        stretch: psql-client-9
 
     Usage: inv pod.debian
+    Usage: inv pod.debian --debian-flavor stretch
     """
-    c.run(f"kubectl run -it debian --image=debian:bullseye-slim --restart=Never -- bash")
+    debian_flavors = ['bullseye', 'buster', 'stretch']
+    if debian_flavor not in debian_flavors:
+        print(f"{debian_flavor} not in the valid list: {debian_flavors}")
+        return
+    c.run(f"kubectl run -it debian --image=debian:{debian_flavor}-slim --restart=Never -- bash")
 
 
 @invoke.task

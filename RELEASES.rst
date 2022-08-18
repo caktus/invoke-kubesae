@@ -1,6 +1,14 @@
 Releases
 ========
 
+v0.0.20, 2022-12-08
+~~~~~~~~~~~~~~~~~~~
+* Adds support for selecting the flavor of debian launched with pod.debian.
+
+v0.0.19, 2022-19-05
+~~~~~~~~~~~~~~~~~~~
+* Allow restoring a db from a different schema to another without complaints.
+
 v0.0.18, 2021-14-08
 ~~~~~~~~~~~~~~~~~~~~
 
