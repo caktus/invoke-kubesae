@@ -145,7 +145,42 @@ def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profil
         print(f"{v:03d}: {k}\n")
 
 
+@invoke.task
+def scale_app(c, down=False, celery=False):
+    """ A utility to simplify scaling namespace app pods and optionally celery pods.
+
+    Developed primarily to assist with backup verifications. Following the instructions in
+    https://caktus.github.io/developer-documentation/reference/backups/
+
+    If the namespace is using a standard django-k8s celery deployment, you can specify --celery in the command to
+    scale the celery worker and beat appropriately.
+
+    Default behavior is non-destructive, if you accidentally call this task it will merely be a no-op on a
+    running stack. However, if you wish to scale the app down to zero so the database can be dropped the usage is:
+
+    Usage:
+        inv staging project.scale-app --down
+        inv staging project.scale-app --down --celery
+
+        inv staging project.scale-app --celery  # if you are scaling up a project with celery
+    """
+
+    if down:
+        c.run(f"kubectl scale -n {c.config.namespace} deployment/app --replicas=0")
+        if celery:
+            # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
+            c.run(f"kubectl scale -n {c.config.namespace} deployment/celery-worker --replicas=0")
+            c.run(f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=0")
+    else:
+        c.run(f"kubectl scale -n {c.config.namespace} deployment/app --replicas=2")
+        if celery:
+            # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
+            c.run(f"kubectl scale -n {c.config.namespace} deployment/celery-worker --replicas=1")
+            c.run(f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=1")
+
+
 utils = invoke.Collection("utils")
 utils.add_task(get_backup_from_hosting)
 utils.add_task(count_backups)
 utils.add_task(list_backup_schedules)
+utils.add_task(scale_app)
