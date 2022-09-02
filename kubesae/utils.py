@@ -146,7 +146,7 @@ def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profil
 
 
 @invoke.task
-def scale_app(c, down=False, celery=False):
+def scale_app(c, down=False, celery=False, container_count=2, celery_count=1):
     """ A utility to simplify scaling namespace app pods and optionally celery pods.
 
     Developed primarily to assist with backup verifications. Following the instructions in
@@ -159,10 +159,10 @@ def scale_app(c, down=False, celery=False):
     running stack. However, if you wish to scale the app down to zero so the database can be dropped the usage is:
 
     Usage:
-        inv staging project.scale-app --down
-        inv staging project.scale-app --down --celery
+        inv staging utils.scale-app --down
+        inv staging utils.scale-app --down --celery
 
-        inv staging project.scale-app --celery  # if you are scaling up a project with celery
+        inv staging utils.scale-app --celery  # if you are scaling up a project with celery
     """
 
     if down:
@@ -172,7 +172,7 @@ def scale_app(c, down=False, celery=False):
             c.run(f"kubectl scale -n {c.config.namespace} deployment/celery-worker --replicas=0")
             c.run(f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=0")
     else:
-        c.run(f"kubectl scale -n {c.config.namespace} {c.config.container_name} --replicas=2")
+        c.run(f"kubectl scale -n {c.config.namespace} {c.config.container_name} --replicas={container_count}")
         if celery:
             # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
             c.run(f"kubectl scale -n {c.config.namespace} deployment/celery-worker --replicas=1")
