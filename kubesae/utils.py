@@ -166,13 +166,13 @@ def scale_app(c, down=False, celery=False):
     """
 
     if down:
-        c.run(f"kubectl scale -n {c.config.namespace} deployment/app --replicas=0")
+        c.run(f"kubectl scale -n {c.config.namespace} {c.config.container_name} --replicas=0")
         if celery:
             # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
             c.run(f"kubectl scale -n {c.config.namespace} deployment/celery-worker --replicas=0")
             c.run(f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=0")
     else:
-        c.run(f"kubectl scale -n {c.config.namespace} deployment/app --replicas=2")
+        c.run(f"kubectl scale -n {c.config.namespace} {c.config.container_name} --replicas=2")
         if celery:
             # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
             c.run(f"kubectl scale -n {c.config.namespace} deployment/celery-worker --replicas=1")
