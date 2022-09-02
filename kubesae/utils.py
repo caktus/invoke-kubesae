@@ -146,7 +146,7 @@ def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profil
 
 
 @invoke.task
-def scale_app(c, down=False, celery=False, container_count=2, celery_count=1):
+def scale_app(c, down=False, celery=False, container_count=2):
     """ A utility to simplify scaling namespace app pods and optionally celery pods.
 
     Developed primarily to assist with backup verifications. Following the instructions in
@@ -155,27 +155,30 @@ def scale_app(c, down=False, celery=False, container_count=2, celery_count=1):
     If the namespace is using a standard django-k8s celery deployment, you can specify --celery in the command to
     scale the celery worker and beat appropriately.
 
-    Default behavior is non-destructive, if you accidentally call this task it will merely be a no-op on a
-    running stack. However, if you wish to scale the app down to zero so the database can be dropped the usage is:
-
     Usage:
-        inv staging utils.scale-app --down
-        inv staging utils.scale-app --down --celery
-
-        inv staging utils.scale-app --celery  # if you are scaling up a project with celery
+        inv staging utils.scale-app --down  # Scales the containers to 0.
+        inv staging utils.scale-app --down --celery  # Scales the containers, celery-worker, and celery-beat to 0.
+        inv staging utils.scale-app  # Scales the containers to 2.
+        inv staging utils.scale-app --celery  # Scales the containers to 2, and celery-worker/celery-beat to 1.
+        inv staging utils.scale-app --container-count 4  # Scales the containers to 4.
+        inv staging utils.scale-app --container-count 4 --celery  # Scales the containers to 4, and celery-worker/celery-beat to 1.
     """
 
     if down:
-        c.run(f"kubectl scale -n {c.config.namespace} {c.config.container_name} --replicas=0")
+        print(f"Scaling the deployment {c.config.container_name} DOWN to 0 replicas.")
+        c.run(f"kubectl scale -n {c.config.namespace} deploy/{c.config.container_name} --replicas=0")
         if celery:
             # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
-            c.run(f"kubectl scale -n {c.config.namespace} deployment/celery-worker --replicas=0")
+            print("Scaling celery worker and beat to 1")
+            c.run(f"kubectl scale -n {c.config.namespace} deploy/celery-worker --replicas=0")
             c.run(f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=0")
     else:
-        c.run(f"kubectl scale -n {c.config.namespace} {c.config.container_name} --replicas={container_count}")
+        print(f"Scaling the deployment {c.config.container_name} UP to {container_count} replicas.")
+        c.run(f"kubectl scale -n {c.config.namespace} deploy/{c.config.container_name} --replicas={container_count}")
         if celery:
             # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
-            c.run(f"kubectl scale -n {c.config.namespace} deployment/celery-worker --replicas=1")
+            print("Scaling celery worker and beat to 1 replica.")
+            c.run(f"kubectl scale -n {c.config.namespace} deploy/celery-worker --replicas=1")
             c.run(f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=1")
 
 
