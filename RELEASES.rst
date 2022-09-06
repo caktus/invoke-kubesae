@@ -1,6 +1,10 @@
 Releases
 ========
 
+v0.0.21, 2022-29-08
+~~~~~~~~~~~~~~~~~~~
+* Adds a utility `util.scale-app` which assists with scaling a namespace's app and celery deployments and celery-beat statefulset.
+
 v0.0.20, 2022-12-08
 ~~~~~~~~~~~~~~~~~~~
 * Adds support for selecting the flavor of debian launched with pod.debian.
