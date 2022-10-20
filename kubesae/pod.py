@@ -94,13 +94,12 @@ def get_db_dump(c, db_var=DEFAULT_DB_VAR, filename=None):
     Usage:
         inv <ENVIRONMENT> pod.get-db-dump --db-var="<DB_VAR_NAME>"
     """
-    database_url = fetch_namespace_var(c, fetch_var=db_var, hide=True).stdout.strip()
     if not filename:
         filename = f"{c.config.namespace}_database.dump"
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
-        f"deploy/{c.config.container_name} -- pg_dump -Fc --no-owner --clean "
-        f"--dbname {database_url} > {filename}"
+        f"deploy/{c.config.container_name} -- sh -c 'pg_dump -Fc --no-owner --clean "
+        f"--dbname ${db_var}' > {filename}"
     )
     c.run(command)
 
