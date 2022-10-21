@@ -114,11 +114,10 @@ def restore_db_from_dump(c,  filename, db_var=DEFAULT_DB_VAR):
     Usage:
         inv <ENVIRONMENT> pod.restore-db-from-dump --db-var="<DB_VAR_NAME>" --filename="<PATH/TO/DBFILE>"
     """
-    database_url = fetch_namespace_var(c, fetch_var=db_var, hide=True).stdout.strip()
     command = (
         f"kubectl --namespace {c.config.namespace} exec -i "
-        f"deploy/{c.config.container_name} -- "
-        f"pg_restore --no-privileges --no-owner --clean --if-exists --dbname {database_url} < {filename}"
+        f"deploy/{c.config.container_name} -- sh -c '"
+        f"pg_restore --no-privileges --no-owner --clean --if-exists --dbname ${db_var}' < {filename}"
     )
     c.run(command)
 
