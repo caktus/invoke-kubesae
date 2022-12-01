@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="invoke-kubesae",
-    version="0.0.21",
+    version="0.1.0",
     packages=find_packages(exclude=["tests"]),
     url="https://github.com/caktus/invoke-kubesae",
     author="Caktus Group",
