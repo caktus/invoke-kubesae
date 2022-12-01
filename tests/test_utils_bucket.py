@@ -1,7 +1,5 @@
 import pytest
 
-import invoke
-
 from kubesae.utils import BASE_BACKUP_BUCKET, get_backup_from_hosting
 
 

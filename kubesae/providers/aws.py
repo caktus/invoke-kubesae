@@ -1,10 +1,12 @@
+# flake8: noqa
 """AWS provider module.
 
 Provides helpful EKS and ECR utilities.
 """
-import re
 import invoke
+
 from colorama import Style
+
 from kubesae.pod import fetch_namespace_var
 
 
@@ -133,7 +135,9 @@ def sync_media_tree(
     if delete:
         dl = "--delete"
 
-    c.run(f"aws s3 sync --acl {acl} s3://{source_media_name} {target_media_name} {dr} {dl}")
+    c.run(
+        f"aws s3 sync --acl {acl} s3://{source_media_name} {target_media_name} {dr} {dl}"
+    )
 
 
 aws = invoke.Collection("aws")

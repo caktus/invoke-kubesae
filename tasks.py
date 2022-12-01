@@ -1,7 +1,8 @@
 import invoke
-from colorama import init
-from kubesae import image, aws, deploy, pod, info
 
+from colorama import init
+
+from kubesae import aws, deploy, image, info, pod
 
 init(autoreset=True)
 
@@ -34,6 +35,6 @@ ns.configure(
         "run": {
             "echo": True,
             "pty": True,
-        }
+        },
     }
 )

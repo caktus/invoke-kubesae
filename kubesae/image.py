@@ -4,6 +4,7 @@ Provides utilities to build and push Docker images.
 """
 
 import invoke
+
 from colorama import Style
 
 
@@ -49,7 +50,10 @@ def build_image(c, tag=None, dockerfile=None, target=None):
     target = f"--target {target}" if target else ""
     # build app image
     print(Style.DIM + f"Tagging {tag}")
-    c.run(f"docker build -t {c.config.app}:latest -t {c.config.app}:{tag} {target} -f {dockerfile} .", echo=True)
+    c.run(
+        f"docker build -t {c.config.app}:latest -t {c.config.app}:{tag} {target} -f {dockerfile} .",
+        echo=True,
+    )
     c.config.tag = tag
 
 
