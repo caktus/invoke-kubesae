@@ -9,8 +9,10 @@ Adoped from Ansible's Python API:
 import json
 import shutil
 
-import ansible.constants as C
 import invoke
+
+import ansible.constants as C
+
 from ansible import context
 from ansible.executor.task_queue_manager import TaskQueueManager
 from ansible.inventory.manager import InventoryManager

@@ -4,7 +4,7 @@ Provides helpful utilities for working with kubernetes and the Google Container 
 """
 
 import invoke
-from colorama import Style
+
 from kubesae.pod import fetch_namespace_var
 
 
@@ -58,10 +58,10 @@ def sync_media_tree(
     dry_run=False,
     delete=False,
 ):
-    """Sync a gcloud media tree for a given environment/namespace to another. 
+    """Sync a gcloud media tree for a given environment/namespace to another.
 
     Args:
-        sync_to      (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev"), or "local". 
+        sync_to      (string, required): A deployment host defined in ansible host_vars (e.g. "production", "staging", "dev"), or "local".
             If set to "local" will sync the tree to a local folder. DEFAULT: staging.
         media_bucket (string, required): The variable name for media defined in settings and host_vars. DEFAULT: MEDIA_STORAGE_BUCKET_NAME
         local_target (string, optional): Sets a target directory for local syncs. Defaults to "./media"
@@ -70,16 +70,16 @@ def sync_media_tree(
         delete       (boolean, optional): If set, deletes files on the target that do not exist on the source.
 
     Usage:
-        inv production gcp.sync-media --dry-run: 
+        inv production gcp.sync-media --dry-run:
             Will simulate a sync from production to staging using the bucket defined in MEDIA_STORAGE_BUCKET.
-        
+
         inv production gcp.sync-media --dry-run --delete
             Will display the files that will be deleted from the staging bucket defined in MEDIA_STORAGE_BUCKET.
-        
+
         inv production gcp.sync-media --media-bucket="MEDIA" --delete
             Will sync files from the bucket defined in the environment variable "MEDIA" to a staging bucket and
             will delete objects on the staging bucket that do not exist on the production bucket.
-        
+
         inv production gcp.sync-media --sync-to="local" --local-target="./public/media"
             Will sync files from the production bucket to "<PROJECT_ROOT>/public/media"
 
@@ -89,7 +89,7 @@ def sync_media_tree(
     target_media_name = ""
     dr = ""
     dl = ""
-    
+
     source_media_name = fetch_namespace_var(
         c, fetch_var=f"{media_bucket}"
     ).stdout.strip()

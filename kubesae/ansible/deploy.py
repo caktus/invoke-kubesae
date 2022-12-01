@@ -1,4 +1,5 @@
 import os
+
 from pathlib import Path
 
 import invoke
@@ -10,7 +11,11 @@ def install_requirements(c):
 
     Usage: inv deploy.install
     """
-    req_file = "requirements.yml" if os.path.exists("deploy/requirements.yml") else "requirements.yaml"
+    req_file = (
+        "requirements.yml"
+        if os.path.exists("deploy/requirements.yml")
+        else "requirements.yaml"
+    )
     with c.cd("deploy/"):
         c.run(f"ansible-galaxy install -f -r '{req_file}' -p roles/")
 
@@ -53,7 +58,9 @@ def ansible_deploy(c, env=None, tag=None, verbosity=1):
     playbook = "deploy.yaml" if os.path.exists("deploy/deploy.yaml") else "deploy.yml"
     v_flag = get_verbosity_flag(verbosity)
     with c.cd("deploy/"):
-        c.run(f"ansible-playbook {playbook} -l {env} -e k8s_container_image_tag={tag} {v_flag}")
+        c.run(
+            f"ansible-playbook {playbook} -l {env} -e k8s_container_image_tag={tag} {v_flag}"
+        )
 
 
 def get_boto_env(profile_name):
@@ -68,13 +75,14 @@ def get_boto_env(profile_name):
     removed.
     """
     import boto3
+
     session = boto3.Session(profile_name=profile_name)
     credentials = session.get_credentials().get_frozen_credentials()
     return {
-        'AWS_ACCESS_KEY_ID': credentials.access_key,
-        'AWS_SECRET_ACCESS_KEY': credentials.secret_key,
-        'AWS_SECURITY_TOKEN': credentials.token,
-        'AWS_SESSION_TOKEN': credentials.token,
+        "AWS_ACCESS_KEY_ID": credentials.access_key,
+        "AWS_SECRET_ACCESS_KEY": credentials.secret_key,
+        "AWS_SECURITY_TOKEN": credentials.token,
+        "AWS_SESSION_TOKEN": credentials.token,
     }
 
 
