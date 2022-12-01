@@ -132,8 +132,6 @@ def ansible_db_restore(c, filename, name="", extra="", verbosity=0, limit=""):
             else "db-restore.yml"
         )
     archive_path = Path(filename)
-    if not archive_path.exists():
-        archive_path = archive_path / "deploy"
     extra = [extra, f"-e k8s_restore_local_archive_path={archive_path.resolve()}"]
     deploy["playbook"](
         c, name=name, extra=" ".join(extra), verbosity=verbosity, limit=limit
