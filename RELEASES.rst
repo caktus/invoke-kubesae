@@ -1,6 +1,10 @@
 Releases
 ========
 
+TBD
+~~~~~~~~~~~~~~~~~~~
+* Add simpler helper to restore backups (``deploy.db-restore``) when testing disaster recovery tasks.
+
 v0.0.21, 2022-29-08
 ~~~~~~~~~~~~~~~~~~~
 * Adds a utility `util.scale-app` which assists with scaling a namespace's app and celery deployments and celery-beat statefulset.
