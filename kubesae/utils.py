@@ -26,7 +26,7 @@ def result_to_json(result: invoke.Result):
 
 @invoke.task(name="get_db_backup")
 def get_backup_from_hosting(
-    c, latest="daily", profile="caktus", backup_name=None, list=False
+    c, latest="daily", profile="caktus", backup_name=None, list=False, dest=""
 ):
     """Downloads a backup from the caktus hosting services bucket
 
@@ -37,6 +37,7 @@ def get_backup_from_hosting(
         profile (str, optional): The AWS profile to allow access to the s3 bucket. DEFAULT: "caktus"
         backup_name(str, optional): A specific backup filename.
         list(bool, optional): If set, will list the contents of the bucket for the projects folder and exit.
+        dest (str, optional): Output filename
 
     Usage:
         $ inv utils.get-db-backup
@@ -55,6 +56,8 @@ def get_backup_from_hosting(
             Will list all of the backup files using the a locally configured AWS_PROFILE named "client-aws"
     """
 
+    if c.config.get("hosting_services_backup_profile"):
+        profile = c.config.hosting_services_backup_profile
     if c.config.get("hosting_services_backup_bucket"):
         bucket = f"s3://{c.config.hosting_services_backup_bucket.strip('/')}"
     else:
@@ -95,12 +98,12 @@ def get_backup_from_hosting(
                 f"{latest}-{c.config.hosting_services_backup_folder}-{dates[-1]}.pgdump"
             )
 
+    if not dest:
+        dest = backup_name
     if not backup_name:
         print(f"No backup matching a latest of {latest} could be found.")
         return
-    c.run(
-        f"aws s3 cp {bucket_folder}/{backup_name} ./{backup_name} --profile {profile}"
-    )
+    c.run(f"aws s3 cp {bucket_folder}/{backup_name} ./{dest} --profile {profile}")
 
 
 @invoke.task
