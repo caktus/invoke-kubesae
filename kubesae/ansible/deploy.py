@@ -1,5 +1,7 @@
 import os
 
+from pathlib import Path
+
 import invoke
 
 
@@ -117,7 +119,35 @@ def ansible_playbook(c, name, extra="", verbosity=1, limit=""):
         c.run(f"ansible-playbook {name} {limit} {extra} {v_flag}", env=shell_env)
 
 
+@invoke.task(pre=[install_requirements])
+def ansible_db_restore(c, filename, name="", extra="", verbosity=0, limit=""):
+    """Restore PostgreSQL database with an Ansible db-restore.yaml playbook.
+
+    Params:
+        filename: The custom-formatted PostgreSQL database archive path
+        name: The name of the Ansible playbook to run, including the extension
+        extra: Additional command line arguments to ansible-playbook
+        verbosity: integer level of verbosity from 0 to 4 (most verbose)
+        limit: The limit passed to underlying ansible-playbook
+
+    Usage: inv deploy.db-restore --filename=mydbarchive.pgdump
+
+    """
+    if not name:
+        name = (
+            "db-restore.yaml"
+            if os.path.exists("deploy/db-restore.yaml")
+            else "db-restore.yml"
+        )
+    archive_path = Path(filename)
+    extra = [extra, f"-e k8s_restore_local_archive_path={archive_path.resolve()}"]
+    deploy["playbook"](
+        c, name=name, extra=" ".join(extra), verbosity=verbosity, limit=limit
+    )
+
+
 deploy = invoke.Collection("deploy")
 deploy.add_task(install_requirements, "install")
 deploy.add_task(ansible_deploy, "deploy")
 deploy.add_task(ansible_playbook, "playbook")
+deploy.add_task(ansible_db_restore, "db-restore")

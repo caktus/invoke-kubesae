@@ -1,6 +1,12 @@
 Releases
 ========
 
+v0.1.0, 2022-12-01
+~~~~~~~~~~~~~~~~~~~
+* Add simpler helper to restore backups (``deploy.db-restore``) when testing disaster recovery tasks (#49)
+* Fix ``utils.get-db-dump`` breaking when output includes kubectl warnings (#48)
+* Use pre-commit for: black, flake8, isort, prettier (#50)
+
 v0.0.21, 2022-29-08
 ~~~~~~~~~~~~~~~~~~~
 * Adds a utility `util.scale-app` which assists with scaling a namespace's app and celery deployments and celery-beat statefulset.
