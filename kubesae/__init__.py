@@ -1,3 +1,4 @@
+# flake8: noqa
 from .ansible.deploy import *
 from .ansible.vars import *
 from .image import *

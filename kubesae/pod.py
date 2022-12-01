@@ -20,7 +20,7 @@ def clean_debian(c):
 
     Usage: inv pod.clean-debian
     """
-    c.run(f"kubectl delete pod debian", warn=True)
+    c.run("kubectl delete pod debian", warn=True)
 
 
 @invoke.task(pre=[clean_debian])

@@ -5,8 +5,6 @@ Provides helpful utilities for working with kubernetes and the Google Container 
 
 import invoke
 
-from colorama import Style
-
 from kubesae.pod import fetch_namespace_var
 
 

@@ -3,8 +3,6 @@ import re
 
 import invoke
 
-from kubesae.info import print_ansible_vars
-
 ANSIBLE_HEADER = re.compile(r"^.*\s=>\s")
 BASE_BACKUP_BUCKET = "caktus-hosting-services-backups"
 
@@ -20,7 +18,7 @@ def result_to_json(result: invoke.Result):
     value = re.sub(ANSIBLE_HEADER, "", result.stdout.strip())
     try:
         return json.loads(value)
-    except json.JSONDecodeError as e:
+    except json.JSONDecodeError:
         print(
             f"Something went wrong. Expected ansible header. Got {result.stdout.strip()[21]}"
         )

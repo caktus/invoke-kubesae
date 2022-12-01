@@ -1,9 +1,8 @@
+# flake8: noqa
 """AWS provider module.
 
 Provides helpful EKS and ECR utilities.
 """
-import re
-
 import invoke
 
 from colorama import Style
