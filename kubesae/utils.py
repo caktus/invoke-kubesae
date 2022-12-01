@@ -1,10 +1,13 @@
-import invoke
 import json
 import re
+
+import invoke
+
 from kubesae.info import print_ansible_vars
 
 ANSIBLE_HEADER = re.compile(r"^.*\s=>\s")
 BASE_BACKUP_BUCKET = "caktus-hosting-services-backups"
+
 
 def process_backups(schedule_list, search_list):
     result = {}
@@ -18,31 +21,35 @@ def result_to_json(result: invoke.Result):
     try:
         return json.loads(value)
     except json.JSONDecodeError as e:
-        print(f"Something went wrong. Expected ansible header. Got {result.stdout.strip()[21]}")
+        print(
+            f"Something went wrong. Expected ansible header. Got {result.stdout.strip()[21]}"
+        )
 
 
 @invoke.task(name="get_db_backup")
-def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=None, list=False):
+def get_backup_from_hosting(
+    c, latest="daily", profile="caktus", backup_name=None, list=False
+):
     """Downloads a backup from the caktus hosting services bucket
 
     Params:
         c (invoke.Context): the running context
-        latest (str, optional): Gets the latest backup from the specified temporal period. 
+        latest (str, optional): Gets the latest backup from the specified temporal period.
             Defaults to "daily".
         profile (str, optional): The AWS profile to allow access to the s3 bucket. DEFAULT: "caktus"
         backup_name(str, optional): A specific backup filename.
         list(bool, optional): If set, will list the contents of the bucket for the projects folder and exit.
-    
+
     Usage:
         $ inv utils.get-db-backup
             Will copy the latest daily backup to project project root
-        
+
         $ inv utils.get-db-backup --latest=monthly
             Will copy the latest monthly backup to the project root
 
         $ inv utils.get-db-backup --backup-name=yearly-2021.pgdump
             Will copy the backup file with the name "yearly-2021.pgdump" to the project root
-        
+
         $ inv utils.get-db-backup --list
             Will list all of the backup files in the bucket for the project.
 
@@ -58,11 +65,15 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
     if c.config.get("hosting_services_backup_folder"):
         bucket_folder = f"{bucket}/{c.config.hosting_services_backup_folder.strip('/')}"
     else:
-        print("A hosting services backup folder has not been defined in tasks.py for this project.")
+        print(
+            "A hosting services backup folder has not been defined in tasks.py for this project."
+        )
         print("Here are a list of the currently defined backup folders:")
         c.run(f"aws s3 ls {bucket} --profile {profile}")
-        print("If the project is not listed it will need to be set up with Hosting services, "
-              "see: https://github.com/caktus/ansible-role-k8s-hosting-services")
+        print(
+            "If the project is not listed it will need to be set up with Hosting services, "
+            "see: https://github.com/caktus/ansible-role-k8s-hosting-services"
+        )
         return
 
     if list:
@@ -82,7 +93,9 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
             if re.search(f"^.*{latest}-.*", x)
         ]
         if dates:
-            backup_name = f"{latest}-{c.config.hosting_services_backup_folder}-{dates[-1]}.pgdump"
+            backup_name = (
+                f"{latest}-{c.config.hosting_services_backup_folder}-{dates[-1]}.pgdump"
+            )
 
     if not backup_name:
         print(f"No backup matching a latest of {latest} could be found.")
@@ -93,7 +106,9 @@ def get_backup_from_hosting(c, latest="daily", profile="caktus", backup_name=Non
 
 
 @invoke.task
-def list_backup_schedules(c, bucket_identifier='caktus-hosting-services-backups', profile='caktus'):
+def list_backup_schedules(
+    c, bucket_identifier="caktus-hosting-services-backups", profile="caktus"
+):
     """
     Lists the backup schedules found in a project's hosting bucket.
     :param c:
@@ -102,7 +117,11 @@ def list_backup_schedules(c, bucket_identifier='caktus-hosting-services-backups'
     :return:
     """
 
-    hosting_bucket = c.hosting_services_backup_folder if c.config.hosting_services_backup_folder else c.config.app
+    hosting_bucket = (
+        c.hosting_services_backup_folder
+        if c.config.hosting_services_backup_folder
+        else c.config.app
+    )
     all_backups = c.run(
         f"aws s3 ls s3://{bucket_identifier}/{hosting_bucket}/ --profile={profile}",
         hide="out",
@@ -111,13 +130,19 @@ def list_backup_schedules(c, bucket_identifier='caktus-hosting-services-backups'
     schedules = []
     print(f"Backup schedules found at {hosting_bucket}\n")
     for backup in all_backups.split("\r\n"):
-        name = backup.split(' ')[-1].split("-")[0]
+        name = backup.split(" ")[-1].split("-")[0]
         if name not in schedules:
             schedules.append(name)
             print(f"{name}")
 
+
 @invoke.task
-def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profile='caktus', extra_schedules=""):
+def count_backups(
+    c,
+    bucket_identifier="caktus-hosting-services-backups",
+    profile="caktus",
+    extra_schedules="",
+):
     """
     count_backups sorts the backups generated with caktus-hosting-services cronjob and prints the number found of each type.
 
@@ -128,10 +153,14 @@ def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profil
     """
     extended = []
     if extra_schedules:
-        extended = [x for x in extra_schedules.split(",") if x != '']
+        extended = [x for x in extra_schedules.split(",") if x != ""]
 
-    schedules = ['daily', 'weekly', 'monthly', 'yearly'] + extended
-    hosting_bucket = c.hosting_services_backup_folder if c.config.hosting_services_backup_folder else c.config.app
+    schedules = ["daily", "weekly", "monthly", "yearly"] + extended
+    hosting_bucket = (
+        c.hosting_services_backup_folder
+        if c.config.hosting_services_backup_folder
+        else c.config.app
+    )
 
     all_backups = c.run(
         f"aws s3 ls s3://{bucket_identifier}/{hosting_bucket}/ --profile={profile}",
@@ -147,7 +176,7 @@ def count_backups(c, bucket_identifier='caktus-hosting-services-backups', profil
 
 @invoke.task
 def scale_app(c, down=False, celery=False, container_count=2):
-    """ A utility to simplify scaling namespace app pods and optionally celery pods.
+    """A utility to simplify scaling namespace app pods and optionally celery pods.
 
     Developed primarily to assist with backup verifications. Following the instructions in
     https://caktus.github.io/developer-documentation/reference/backups/
@@ -166,20 +195,34 @@ def scale_app(c, down=False, celery=False, container_count=2):
 
     if down:
         print(f"Scaling the deployment {c.config.container_name} DOWN to 0 replicas.")
-        c.run(f"kubectl scale -n {c.config.namespace} deploy/{c.config.container_name} --replicas=0")
+        c.run(
+            f"kubectl scale -n {c.config.namespace} deploy/{c.config.container_name} --replicas=0"
+        )
         if celery:
             # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
             print("Scaling celery worker and beat DOWN to 0 replicas")
-            c.run(f"kubectl scale -n {c.config.namespace} deploy/celery-worker --replicas=0")
-            c.run(f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=0")
+            c.run(
+                f"kubectl scale -n {c.config.namespace} deploy/celery-worker --replicas=0"
+            )
+            c.run(
+                f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=0"
+            )
     else:
-        print(f"Scaling the deployment {c.config.container_name} UP to {container_count} replicas.")
-        c.run(f"kubectl scale -n {c.config.namespace} deploy/{c.config.container_name} --replicas={container_count}")
+        print(
+            f"Scaling the deployment {c.config.container_name} UP to {container_count} replicas."
+        )
+        c.run(
+            f"kubectl scale -n {c.config.namespace} deploy/{c.config.container_name} --replicas={container_count}"
+        )
         if celery:
             # celery needs to scale the celery-worker deployment and the celery-beat stateful-set
             print("Scaling celery worker and beat to 1 replica.")
-            c.run(f"kubectl scale -n {c.config.namespace} deploy/celery-worker --replicas=1")
-            c.run(f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=1")
+            c.run(
+                f"kubectl scale -n {c.config.namespace} deploy/celery-worker --replicas=1"
+            )
+            c.run(
+                f"kubectl scale -n {c.config.namespace} statefulsets celery-beat --replicas=1"
+            )
 
 
 utils = invoke.Collection("utils")

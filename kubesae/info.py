@@ -1,4 +1,5 @@
 import os
+
 import invoke
 import yaml
 
@@ -17,17 +18,17 @@ def print_ansible_vars(c, var=None, yaml=None, pty=True, hide=False):
 
     Returns:
         invoke.Result
-    
+
     Usage:
         $ inv staging info.print-ansible-vars
-            Prints all of the environment variables values defined in the 
-            "k8s_environment_variables" dictionary located at 
+            Prints all of the environment variables values defined in the
+            "k8s_environment_variables" dictionary located at
             <PROJECT_ROOT>/deploy/host_vars/staging.yml.
 
         $ inv staging info.print-ansible-vars --var=foo_bar_baz
             Prints the "foo_bar_baz" value defined in the "foo_bar_baz"
             variable located at <PROJECT_ROOT>/deploy/host_vars/staging.yml
-        
+
         $ inv staging info.print-ansible-vars --var=foo_bar_baz --yaml="@group_vars/all.yaml"
             Prints the "foo_bar_baz" value defined in the "foo_bar_baz"
             variable located at <PROJECT_ROOT>/deploy/group_vars/all.yml
@@ -35,7 +36,11 @@ def print_ansible_vars(c, var=None, yaml=None, pty=True, hide=False):
     expose_var = "k8s_environment_variables"
     if var:
         expose_var = var
-    yaml_file = f"@host_vars/{c.config.env}.yml" if os.path.exists(f"deploy/host_vars/{c.config.env}.yml") else f"@host_vars/{c.config.env}.yaml"
+    yaml_file = (
+        f"@host_vars/{c.config.env}.yml"
+        if os.path.exists(f"deploy/host_vars/{c.config.env}.yml")
+        else f"@host_vars/{c.config.env}.yaml"
+    )
 
     cmd = f"ansible {c.config.env} -m debug -a var='{expose_var}' -e '{yaml_file}'"
     with c.cd("deploy/"):
@@ -51,7 +56,9 @@ def pod_stats(c):
     Usage: inv info.pod-stats
     """
     nodes = yaml.safe_load(c.run("kubectl get nodes -o yaml", hide="out").stdout)
-    pod_capacity = sum([int(item["status"]["capacity"]["pods"]) for item in nodes["items"]])
+    pod_capacity = sum(
+        [int(item["status"]["capacity"]["pods"]) for item in nodes["items"]]
+    )
     pod_total = c.run(
         "kubectl get pods --all-namespaces | grep Running | wc -l", hide="out"
     ).stdout.strip()

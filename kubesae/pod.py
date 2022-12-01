@@ -1,6 +1,7 @@
 import invoke
 
-DEFAULT_DB_VAR="DATABASE_URL"
+DEFAULT_DB_VAR = "DATABASE_URL"
+
 
 @invoke.task(default=True)
 def shell(c):
@@ -8,7 +9,9 @@ def shell(c):
 
     Usage: inv <ENVIRONMENT> pod.shell
     """
-    c.run(f"kubectl exec -it deploy/{c.config.container_name} -n {c.config.namespace} bash")
+    c.run(
+        f"kubectl exec -it deploy/{c.config.container_name} -n {c.config.namespace} bash"
+    )
 
 
 @invoke.task()
@@ -35,11 +38,13 @@ def debian(c, debian_flavor="bullseye"):
     Usage: inv pod.debian
     Usage: inv pod.debian --debian-flavor stretch
     """
-    debian_flavors = ['bullseye', 'buster', 'stretch']
+    debian_flavors = ["bullseye", "buster", "stretch"]
     if debian_flavor not in debian_flavors:
         print(f"{debian_flavor} not in the valid list: {debian_flavors}")
         return
-    c.run(f"kubectl run -it debian --image=debian:{debian_flavor}-slim --restart=Never -- bash")
+    c.run(
+        f"kubectl run -it debian --image=debian:{debian_flavor}-slim --restart=Never -- bash"
+    )
 
 
 @invoke.task
@@ -48,9 +53,7 @@ def clean_collectstatic(c):
 
     Usage: inv pod.clean-collectstatic
     """
-    c.run(
-        f"kubectl delete pods -n {c.config.namespace} -ljob-name=collectstatic"
-    )
+    c.run(f"kubectl delete pods -n {c.config.namespace} -ljob-name=collectstatic")
 
 
 @invoke.task
@@ -59,9 +62,7 @@ def clean_migrations(c):
 
     Usage: inv <ENVIRONMENT> pod.clean-migrations
     """
-    c.run(
-        f"kubectl delete pods -n {c.config.namespace} -ljob-name=migrate"
-    )
+    c.run(f"kubectl delete pods -n {c.config.namespace} -ljob-name=migrate")
 
 
 @invoke.task
@@ -106,7 +107,7 @@ def get_db_dump(c, db_var=DEFAULT_DB_VAR, filename=None):
 
 
 @invoke.task()
-def restore_db_from_dump(c,  filename, db_var=DEFAULT_DB_VAR):
+def restore_db_from_dump(c, filename, db_var=DEFAULT_DB_VAR):
     """Load a database dump from a file.
 
     Params:
