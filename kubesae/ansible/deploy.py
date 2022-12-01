@@ -108,6 +108,7 @@ def ansible_playbook(c, name, extra="", verbosity=1, limit=""):
         limit = f"-l{c.config.env}"
     v_flag = get_verbosity_flag(verbosity)
     with c.cd("deploy/"):
+        c.run(f"ansible-playbook {name} {limit} {extra} {v_flag}", env=shell_env)
 
 
 @invoke.task(pre=[install_requirements])
