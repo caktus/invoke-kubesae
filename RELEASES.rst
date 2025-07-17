@@ -1,6 +1,11 @@
 Releases
 ========
 
+
+v0.1.1, 2025-07-17
+~~~~~~~~~~~~~~~~~~~
+* Fix exec into pod command (#52)
+
 v0.1.0, 2022-12-01
 ~~~~~~~~~~~~~~~~~~~
 * Add simpler helper to restore backups (``deploy.db-restore``) when testing disaster recovery tasks (#49)
