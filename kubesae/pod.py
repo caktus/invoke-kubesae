@@ -10,7 +10,7 @@ def shell(c):
     Usage: inv <ENVIRONMENT> pod.shell
     """
     c.run(
-        f"kubectl exec -it deploy/{c.config.container_name} -n {c.config.namespace} bash"
+        f"kubectl exec -it deploy/{c.config.container_name} -n {c.config.namespace} -- bash"
     )
 
 
